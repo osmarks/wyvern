@@ -65,10 +65,10 @@ end
 local protocol = "wyvern"
 
 local function init_screen(scr, bg, fg)
-    scr.clear()
     scr.setCursorPos(1, 1)
     scr.setBackgroundColor(colors.white)
     scr.setTextColor(colors.black)
+    scr.clear()
 end
 
 -- Runs a Wyvern node server.
