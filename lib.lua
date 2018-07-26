@@ -188,14 +188,14 @@ local function find_peripherals(predicate)
     for k, name in pairs(peripheral.getNames()) do
         local wrapped = peripheral.wrap(name)
         local type = peripheral.getType(name)
-        if predicate(type, name, wrapped) then table.insert(matching, wrapped) end
+        if predicate(type, name, wrapped) then table.insert(matching, { wrapped = wrapped, name = name} ) end
     end
     return matching
 end
 
 -- Set up stuff for running this library's features (currently, modem initialization)
 local function init()
-    d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), rednet.open)
+    d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), function(p) rednet.open(p.name) end)
 end
 
 return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init }
