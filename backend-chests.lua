@@ -115,11 +115,11 @@ local function server(command)
     if command.type == "buffers" then -- Sends the external address of the buffer
         return conf.buffer_external
     elseif command.type == "reindex" then
-        updateIndex()
+        update_index()
     elseif command.type == "extract" then
         local result = find_by_ID_meta(command.ID, command.meta)
     end
 end
 
 update_index()
-serve(server, "storage")
+w.serve(server, "storage")
