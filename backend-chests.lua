@@ -1,52 +1,59 @@
 -- Chest backend
 -- Currently just the one for Dragon. Will not actually work yet.
 
-local util = require "util"
-local conf = util.conf
+local w = require "lib"
+local d = require "luadash"
 
-rednet.open(conf.modem)
+local conf = w.load_config({
+    "buffer_internal",
+    "buffer_external"
+})
+
+local BUFFER_OUT_SLOT = 1
+local BUFFER_IN_SLOT = 2
 
 -- Find all chests or shulker boxes
-local inventories = {}
-for _, n in pairs(peripheral.getNames()) do
-    local p = peripheral.wrap(n)
-    if 
-        string.find(n, "chest") or
-        string.find(n, "shulker") then
-        inventories[n] = p
-    end
-end
+local inventories = w.find_peripherals(function(type, name, wrapped)
+    return string.find(name, "chest") or string.find(name, "shulker")
+end)
 
 local nameCache = {}
+
+local function get_cache_name(item)
+    local n = item.name .. ":" .. item.damage
+    
+end
 
 -- Gets the display name of the given item (in the given chest peripheral & slot)
 -- If its name is not cached, cache it.
 -- If it is, just return the cached name
-function cache(item, chest, slot)
+local function cache(item, chest, slot)
     local idx = item.name .. ":" .. item.damage
     
     if nameCache[idx] then
         return nameCache[idx]
     else
-		local n = chest.getItemMeta(slot).displayName
+		local n = chest.getItemMeta(slot).display_name
         nameCache[idx] = n
 		return n
     end
 end
 
 local index = {}
-function updateIndexFor(name)
+-- Update the index for the given peripheral
+local function update_index_for(name)
     local inv = inventories[name]
     local data = inv.list()
     
     for slot, item in pairs(data) do
-        data[slot].displayName = cache(item, inv, slot)
+        data[slot].display_name = cache(item, inv, slot)
     end
     
     index[name] = data
 end
 
-function updateIndex()
+-- Reindex all connected inventories
+local function update_index()
 	for n in pairs(inventories) do
 		updateIndexFor(n)
 		sleep()
@@ -54,19 +61,23 @@ function updateIndex()
 	print "Indexing complete."
 end
 
--- Finds all items matching a certain predicate
-function find(predicate)
-    for name, items in pairs(index) do
+-- Finds all items matching a certain predicate.
+-- Returns a table of tables of { name, slot, item }
+local function find(predicate)
+    local ret = {}
+    for inventory, items in pairs(index) do
         for slot, item in pairs(items) do
-            if predicate(item) then
-                return name, slot, item
+            local ok, extra = predicate(item) -- allow predicates to return some extra data which will come out in resulting results
+            if ok then
+                table.insert(ret, { location = { inventory = inventory, slot = slot }, item = item, extra = extra })
             end
         end
     end
+    return ret
 end
 
--- Finds space in the chest system
-function findSpace()
+-- Finds space in the chest system. Returns the name of an inventory which has space.
+local function find_space()
     for name, items in pairs(index) do
         if #items < inventories[name].size() then
             return name
@@ -74,76 +85,39 @@ function findSpace()
     end
 end
 
-function search(msg)
+local function find_by_ID_meta(id, meta)
     return find(function(item)
         return 
-            (not msg.meta or item.damage == msg.meta) and
-            (not msg.name or item.name == msg.name) and
-            (not msg.dname or string.find(item.displayName:lower(), msg.dname:lower()))
+            (not meta or item.damage == meta) and -- if metadata provided, ensure match
+            (not id or item.name == id) -- if internal name provided, ensure match
     end)
 end
 
-function processRequest(msg)
-    print(textutils.serialise(msg))
+local function search(query, threshold)
+    local threshold = threshold or 4
+    local results = find(function(item)
+        local distance = d.distance(query, item.display_name)
+        if distance < threshold then
+            return true, distance
+        else return false end
+    end)
+    return d.sort(results, function(x) return x.extra end) -- sort returned results by closeness to query
+end
 
-    -- Extract an item. If meta and name are supplied, each supplied value must match exactly.
-    -- Applies a fuzzy search to display names
-    -- Extracted items are either deposited in buffer or directly in target inventory.
-    if msg.cmd == "extract" then
-        local inv, slot, item = search(msg)
+local fetch_by_location(loc, limit)
+    local peripheral_name, slot, limit = loc.inventory, loc.slot, limit or 64
+    return peripheral.call(conf.buffer_internal, "pullItems", peripheral_name, slot, limit, BUFFER_OUT_SLOT)
+end
 
-        local qty = msg.qty or 64
-
-		updateIndexFor(inv)
-
-		local moved = peripheral.call(conf.bufferOutInternal, "pullItems", inv, slot, qty, 1)
-
-		if msg.destInv then
-			moved = peripheral.call(conf.bufferOutExternal, "pushItems", msg.destInv, 1, 64, msg.destSlot)
-		end
-
-        return {moved, item}
-    -- Pulls items from an external inventory into storage.
-	elseif msg.cmd == "insert" then
-		if msg.fromInv and msg.fromSlot then
-			peripheral.call(conf.bufferInExternal, "pullItems", msg.fromInv, msg.fromSlot, msg.qty or 64, 1)
-		end
-
-		local toInv = findSpace()
-		if not toInv then return "ERROR" end
-		
-		peripheral.call(conf.bufferInInternal, "pushItems", toInv, 1)
-
-		updateIndexFor(toInv) -- I don't know a good way to figure out where exactly the items went
-
-        return "OK"
-    -- Just return the external network names of the buffers
-	elseif msg.cmd == "buffers" then
-        return { conf.bufferInExternal, conf.bufferOutExternal }
-    -- Reindexes system
-	elseif msg.cmd == "reindex" then
-		updateIndex()
-        return "OK"
-    -- Returns entire index
-    elseif msg.cmd == "list" then
-        return util.collate(index)
-    -- Looks up supplied name in the cache.
-    elseif msg.cmd == "name" then
-        msg.meta = msg.meta or 0
-        return msg.name and msg.meta and nameCache[msg.name .. ":" .. msg.meta]
+local function server(command)
+    if command.type == "buffers" then -- Sends the external address of the buffer
+        return conf.buffer_external
+    elseif command.type == "reindex" then
+        updateIndex()
+    elseif command.type == "extract" then
+        local result = find_by_ID_meta(command.ID, command.meta)
     end
 end
 
-function processRequests()
-    while true do
-        util.processMessage(function(msg)
-            local ok, r = pcall(processRequest, msg)
-            if not ok then r = "ERROR" end
-
-            return true, r
-        end)
-    end
-end
-
-updateIndex()
-processRequests()
+update_index()
+serve(server, "storage")
