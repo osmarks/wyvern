@@ -64,12 +64,30 @@ end
 
 local protocol = "wyvern"
 
+local function init_screen(scr, bg, fg)
+    scr.clear()
+    scr.setCursorPos(1, 1)
+    scr.setBackgroundColor(colors.white)
+    scr.setTextColor(colors.black)
+end
+
 -- Runs a Wyvern node server.
 -- First argument is a function to be run for requests. It will be provided the request data and must return the value to respond with.
 -- If it errors, an internal error will be returned.
 -- Second argument is the type of node to host as. Other nodes may attempt to use this to discover other local-network nodes.
-local function serve(fn, nodeType)
-    rednet.host(protocol .. "/" .. nodeType, nodeType .. "/" .. tostring(os.getComputerID()))
+-- Also displays a nice informational UI
+local function serve(fn, node_type)
+    local w, h = term.getSize()
+    local titlebar = window.create(term, 1, 1, w, 1)
+    local main_screen = window.create(term, 1, 2, w, h - 1)
+
+    init_screen(titlebar, colors.lightgray, colors.black)
+    titlebar.write("Wyvern " .. node_type)
+
+    init_screen(main_screen, colors.white, colors.black)
+    term.redirect(main_screen)
+
+    rednet.host(protocol .. "/" .. node_type, node_type .. "/" .. tostring(os.getComputerID()))
 
     while true do
         local sender, message = rednet.receive(protocol)
@@ -77,12 +95,26 @@ local function serve(fn, nodeType)
         -- As a default response, send an "invalid request" error
         local response = errors.make(errors.INVALID)
 
+        local start_time = os.clock()
+        print(tostring(sender) .. " > " .. tostring(os.getComputerID())) -- show sender and recipient
+
         -- If the message actually is a compliant Wyvern request (is a table, containing a message ID, request, and a type saying "request") then run
         -- the provided server function, and package successful results into a response type
         if type(message) == "table" and message.type and message.type == "request" and message.request then
+            print("Request:", textutils.serialise(message.request))
+
             local ok, result = pcall(fn, request)
-            if not ok then response = errors.make(errors.INTERNAL, result) end
-            else response = { type = "response", response = result }
+            if not ok then 
+                response = errors.make(errors.INTERNAL, result)
+                print("Error:", textutils.serialise(result)) -- show error
+            else 
+                local end_time = os.clock()
+                print("Response:", textutils.serialise(result))
+                print("Time:", tostring(end_time - start_time))
+                response = { type = "response", response = result }
+            end
+        else
+            print("Request Invalid")
         end
 
         rednet.send(sender, response, protocol)
