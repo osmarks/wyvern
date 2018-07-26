@@ -78,8 +78,8 @@ end
 -- Also displays a nice informational UI
 local function serve(fn, node_type)
     local w, h = term.getSize()
-    local titlebar = window.create(term, 1, 1, w, 1)
-    local main_screen = window.create(term, 1, 2, w, h - 1)
+    local titlebar = window.create(term.current(), 1, 1, w, 1)
+    local main_screen = window.create(term.current(), 1, 2, w, h - 1)
 
     init_screen(titlebar, colors.lightgray, colors.black)
     titlebar.write("Wyvern " .. node_type)
