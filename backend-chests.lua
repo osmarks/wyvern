@@ -21,7 +21,7 @@ local nameCache = {}
 
 local function get_cache_name(item)
     local n = item.name .. ":" .. item.damage
-    
+    print(textutils.serialise(item))
 end
 
 -- Gets the display name of the given item (in the given chest peripheral & slot)
@@ -104,7 +104,7 @@ local function search(query, threshold)
     return d.sort(results, function(x) return x.extra end) -- sort returned results by closeness to query
 end
 
-local fetch_by_location(loc, limit)
+local function fetch_by_location(loc, limit)
     local peripheral_name, slot, limit = loc.inventory, loc.slot, limit or 64
     return peripheral.call(conf.buffer_internal, "pullItems", peripheral_name, slot, limit, BUFFER_OUT_SLOT)
 end
