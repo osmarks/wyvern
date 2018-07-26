@@ -19,16 +19,18 @@ end)
 
 local nameCache = {}
 
+-- Get the name for an item in the cache
 local function get_cache_name(item)
     local n = item.name .. ":" .. item.damage
-    print(textutils.serialise(item))
+    if item.nbtHash then n = n .. "#" .. item.nbtHash end
+    return n
 end
 
 -- Gets the display name of the given item (in the given chest peripheral & slot)
 -- If its name is not cached, cache it.
 -- If it is, just return the cached name
 local function cache(item, chest, slot)
-    local idx = item.name .. ":" .. item.damage
+    local idx = get_cache_name(item)
     
     if nameCache[idx] then
         return nameCache[idx]
