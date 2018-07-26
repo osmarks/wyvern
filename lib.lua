@@ -81,10 +81,10 @@ local function serve(fn, node_type)
     local titlebar = window.create(term.current(), 1, 1, w, 1)
     local main_screen = window.create(term.current(), 1, 2, w, h - 1)
 
-    init_screen(titlebar, colors.lightgray, colors.black)
+    init_screen(titlebar, colors.lightGray, colors.black)
     titlebar.write("Wyvern " .. node_type)
 
-    init_screen(main_screen, colors.black, colors.white)
+    init_screen(main_screen, colors.white, colors.black)
     term.redirect(main_screen)
 
     titlebar.redraw()
