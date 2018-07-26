@@ -13,9 +13,9 @@ local BUFFER_OUT_SLOT = 1
 local BUFFER_IN_SLOT = 2
 
 -- Find all chests or shulker boxes
-local inventories = d.map_with_key(function(_, p) return p.name, p.wrapped end, w.find_peripherals(function(type, name, wrapped)
+local inventories = d.map_with_key(w.find_peripherals(function(type, name, wrapped)
     return string.find(name, "chest") or string.find(name, "shulker")
-end))
+end), function(_, p) return p.name, p.wrapped end)
 
 local display_name_cache = {}
 
