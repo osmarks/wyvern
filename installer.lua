@@ -1,25 +1,24 @@
-local d = _ or require "luadash"
+local d = require "luadash" or _
 
 local wyvern_files = {
     root = "https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/",
     files = { "installer.lua", "luadash.lua", "lib.lua" }
 }
 
-local ccfuse_files = {
-    root = "https://raw.githubusercontent.com/apemanzilla/ccfuse/master/client/",
-    files = { "base64.lua", "json.lua", "ccfuse.lua" }
-}
-
 local args = {...}
-local command = d.head(args)
+local command = args[1] -- native luadash head is broken
 local params = d.tail(args)
 
-local function download_files(urls)
-    d.map(urls, function(urls) shell.run("wget", url) end) -- TODO: stop using wget and use actual HTTP/FS API
-end
-
 local function download_group(g)
-    download_files(d.map(g.files, function(file) return g.root .. file end))
+    d.map(g.files, function(file) 
+        local url = g.root .. file
+        local h = http.get(url)
+        local contents = h.readAll()
+        local f = fs.open(file, "w")
+        f.write(contents)
+        f.close()
+        print("Written", file, "from", url)
+    end)
 end
 
 local function prompt(msg)

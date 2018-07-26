@@ -205,7 +205,7 @@ end
 
 function _.head(t)
   _.expect('head', 1, 'table', t)
-  return x[1]
+  return t[1]
 end
 
 function _.tail(t)
