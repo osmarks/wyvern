@@ -161,4 +161,4 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), rednet.open)
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, load_config = load_config, find_peripherals = find_peripherals, init = init }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init }
