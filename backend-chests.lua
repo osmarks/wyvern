@@ -55,7 +55,7 @@ end
 -- Reindex all connected inventories
 local function update_index()
 	for n in pairs(inventories) do
-		updateIndexFor(n)
+		update_index_for(n)
 		sleep()
 	end
 	print "Indexing complete."
