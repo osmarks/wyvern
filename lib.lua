@@ -69,7 +69,7 @@ local protocol = "wyvern"
 -- If it errors, an internal error will be returned.
 -- Second argument is the type of node to host as. Other nodes may attempt to use this to discover other local-network nodes.
 local function serve(fn, nodeType)
-    rednet.host(protocol .. "/" .. nodeType, nodeType)
+    rednet.host(protocol .. "/" .. nodeType, nodeType .. "/" .. tostring(os.getComputerID()))
 
     while true do
         local sender, message = rednet.receive(protocol)
