@@ -1,16 +1,13 @@
-local d = require "luadash" or _
-
 local wyvern_files = {
     root = "https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/",
     files = { "installer.lua", "luadash.lua", "lib.lua" }
 }
 
 local args = {...}
-local command = args[1] -- native luadash head is broken
-local params = d.tail(args)
+local command = args[1]
 
 local function download_group(g)
-    d.map(g.files, function(file) 
+    for _, file in pairs(g.files) do 
         local url = g.root .. file
         local h = http.get(url)
         local contents = h.readAll()
@@ -18,7 +15,7 @@ local function download_group(g)
         f.write(contents)
         f.close()
         print("Written", file, "from", url)
-    end)
+    end
 end
 
 local function prompt(msg)
