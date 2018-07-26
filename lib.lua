@@ -4,6 +4,8 @@ Contains:
 error handling (a set of usable errors and human-readable printing for them),
 networking (a simple node-based system on top of rednet)
 configuration (basically just loading serialized tables from a file)
+general functions of utility
+Plethora helpers
 ]]
 
 local d = require "luadash"
@@ -108,6 +110,15 @@ local function query_by_type(type, request, tries)
     local ID = rednet.lookup(protocol .. "/" .. type)
     if not ID then return errors.make(errors.NOMATCHINGNODE, type) end
     return query_by_ID(ID, request, tries)
+end
+
+-- PLETHORA HELPERS
+
+-- Gets the internal identifier of an item - unique (hopefully) per type of item, as defined by NBT, metadata/damage and ID/name
+local function get_internal_identifier(item)
+    local n = item.name .. ":" .. item.damage
+    if item.nbtHash then n = n .. "#" .. item.nbtHash end
+    return n
 end
 
 -- GENERAL STUFF
