@@ -87,6 +87,9 @@ local function serve(fn, node_type)
     init_screen(main_screen, colors.white, colors.black)
     term.redirect(main_screen)
 
+    titlebar.redraw()
+    main_screen.redraw()
+
     rednet.host(protocol .. "/" .. node_type, node_type .. "/" .. tostring(os.getComputerID()))
 
     while true do
@@ -116,6 +119,8 @@ local function serve(fn, node_type)
         else
             print("Request Invalid")
         end
+
+        main_screen.redraw()
 
         rednet.send(sender, response, protocol)
     end
