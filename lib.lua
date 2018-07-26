@@ -84,7 +84,7 @@ local function serve(fn, node_type)
     init_screen(titlebar, colors.lightgray, colors.black)
     titlebar.write("Wyvern " .. node_type)
 
-    init_screen(main_screen, colors.white, colors.black)
+    init_screen(main_screen, colors.black, colors.white)
     term.redirect(main_screen)
 
     titlebar.redraw()
