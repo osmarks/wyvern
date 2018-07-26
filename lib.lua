@@ -17,6 +17,7 @@ local errors = {
     NOITEMS = 3, -- No item errors should either provide a table of { type = "human-readable name if available or internal ID if not", quantity = number of items missing } or a human-readable string
     NORESPONSE = 4, -- No response errors (should only be produced by query_ functions may contain a description of which node the error is caused by in their data
     NOMATCHINGNODE = 5, -- No matching node errors (should only be prodcuced by query_ functions) may contain a description of which type of node cannot be found.
+    NOSPACE = 6, -- No data required. Should be returned if there is no available storage space.
     make = function(e, d)
         return { type = "error", error = e, data = d }
     end
@@ -24,7 +25,7 @@ local errors = {
 
 -- Converts an error into human-readable format
 errors.format = function(e)
-    if not (e.type and e.type == "error" and e.data and e.error) then return "Not actually an error." end
+    if not (e.type and e.type == "error" and e.data and e.error) then return "Provided error is not an error object." end
     if e.error == errors.INTERNAL then
         return "Internal error - provided info: " .. textutils.serialise(e.data) .. "."
     elseif e.error == errors.INVALID then
@@ -50,6 +51,8 @@ errors.format = function(e)
         else
             return "No node of desired type found."
         end
+    elseif e.errors == errors.NOSPACE then
+        return "No available storage space."
     else
         return "Error is invalid. Someone broke it."
     end
@@ -113,6 +116,9 @@ end
 -- "required_data" is a list of keys which must be in the config file's data
 -- "defaults" is a map of keys and default values for them, which will be used if there is no matching key in the data
 local function load_config(required_data, defaults, filename)
+    local required_data = required_data or {}
+    local defaults = defaults or {}
+
     local filename = filename or "wyvern_config.tbl"
     local f = fs.open(filename, "r")
     local data = textutils.unserialise(f.readAll())
@@ -144,4 +150,4 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), rednet.open)
 end
 
-return { errors, serve, query_by_ID, query_by_type, load_config, find_peripherals, init }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, load_config = load_config, find_peripherals = find_peripherals, init = init }
