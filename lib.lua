@@ -66,8 +66,8 @@ local protocol = "wyvern"
 
 local function init_screen(scr, bg, fg)
     scr.setCursorPos(1, 1)
-    scr.setBackgroundColor(colors.white)
-    scr.setTextColor(colors.black)
+    scr.setBackgroundColor(bg)
+    scr.setTextColor(fg)
     scr.clear()
 end
 
