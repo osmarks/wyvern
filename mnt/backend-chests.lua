@@ -1,3 +1,6 @@
+-- Chest backend
+-- Currently just the one for Dragon. Will not actually work yet.
+
 local util = require "util"
 local conf = util.conf
 
