@@ -115,4 +115,5 @@ local function server(command)
 end
 
 update_index()
+w.init()
 w.serve(server, "storage")
