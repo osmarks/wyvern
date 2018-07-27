@@ -49,6 +49,7 @@ end
 
 -- Reindex all connected inventories
 local function update_index()
+    print "Indexing started."
 	for n in pairs(inventories) do
 		update_index_for(n)
 		sleep()
