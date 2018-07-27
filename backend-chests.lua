@@ -163,6 +163,8 @@ local function server(command)
         os.queueEvent("reindex", inventory_with_space)
 
         return { moved = moved }
+    elseif command.type == "search" then
+        return d.map(search(command.query, command.threshold), function(x) return x.item end)
     end
 end
 
