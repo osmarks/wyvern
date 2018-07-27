@@ -97,7 +97,7 @@ local function search(query, threshold)
             return true, distance
         else return false end
     end)
-    return d.sort(results, function(x) return x.extra end) -- sort returned results by closeness to query
+    return d.sort_by(results, function(x) return x.extra end) -- sort returned results by closeness to query
 end
 
 local function fetch_by_location(loc, limit)
