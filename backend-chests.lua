@@ -45,17 +45,18 @@ local function update_index_for(name)
     end
     
     index[name] = data
+
+    print("Indexed", n)
 end
 
 -- Reindex all connected inventories
 local function update_index()
-    print "Indexing started."
+    print "Full indexing started."
 	for n in pairs(inventories) do
         update_index_for(n)
-        print("Indexed", n)
 		sleep()
 	end
-	print "Indexing complete."
+	print "Full indexing complete."
 end
 
 -- Finds all items matching a certain predicate.
