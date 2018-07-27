@@ -83,11 +83,12 @@ local function find_space()
     end
 end
 
-local function find_by_ID_meta(id, meta)
+local function find_by_ID_meta_NBT(ID, meta, NBT)
     return find(function(item)
         return 
             (not meta or item.damage == meta) and -- if metadata provided, ensure match
-            (not id or item.name == id) -- if internal name provided, ensure match
+            (not id or item.name == ID) and -- if internal name provided, ensure match
+            (not NBT or item.nbtHash == NBT) -- if NBT hash provided, ensure match
     end)
 end
 
@@ -125,7 +126,7 @@ local function server(command)
     elseif command.type == "reindex" then
         os.queueEvent "reindex"
     elseif command.type == "extract" then
-        local result = find_by_ID_meta(command.ID, command.meta)
+        local result = find_by_ID_meta(command.ID, command.meta, command.NBT)
         local first_available = result[1]
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
@@ -164,7 +165,14 @@ local function server(command)
 
         return { moved = moved }
     elseif command.type == "search" then
-        return d.map(search(command.query, command.threshold), function(x) return x.item end)
+        local matching_items =  d.map(search(command.query, command.threshold), function(x) return x.item end)
+        local out = {}
+        for _, stack in pairs(matching_items) do
+            local i = w.get_internal_identifier(stack)
+            if out[i] then out[i] = out[i] + stack.count
+            else out[i] = stack.count end
+        end
+        return matching_items
     end
 end
 

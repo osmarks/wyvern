@@ -173,6 +173,24 @@ end
 
 -- GENERAL STUFF
 
+-- Converts a table of the form {"x", "x", "y"} into {x = 2, y = 1}
+local function collate(items)
+    local ret = {}
+    for _, i in pairs(items) do
+        ret[i] = (ret[i] or 0) + 1
+    end
+    return ret
+end
+
+-- Checks whether "needs"'s (a collate-formatted table) values are all greater than those of "has"
+local function satisfied(needs, has)
+    local good = true
+    for k, qty in pairs(needs) do
+        if qty > (has[k] or 0) then good = false end
+    end
+    return good
+end
+
 -- Loads a config file (in serialized-table format) from "filename" or wyvern_config.tbl
 -- "required_data" is a list of keys which must be in the config file's data
 -- "defaults" is a map of keys and default values for them, which will be used if there is no matching key in the data
@@ -211,4 +229,4 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), function(p) rednet.open(p.name) end)
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied }
