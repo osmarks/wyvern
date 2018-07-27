@@ -172,7 +172,7 @@ local function server(command)
             if out[i] then out[i] = out[i] + stack.count
             else out[i] = stack.count end
         end
-        return matching_items
+        return out
     end
 end
 
