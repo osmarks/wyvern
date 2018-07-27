@@ -137,7 +137,6 @@ local function query_by_ID(ID, request, max_tries)
         rednet.send(ID, request_object, protocol)
         _, result = rednet.receive(protocol, 1)
         tries = tries + 1
-        sleep(1)
     until result ~= nil or tries >= max_tries
 
     if result == nil then result = errors.make(errors.NORESPONSE, ID) end
