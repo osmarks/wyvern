@@ -173,6 +173,5 @@ local function indexer_thread()
     end
 end
 
-clear_buffer()
 w.init()
 parallel.waitForAll(function() os.queueEvent("reindex") w.serve(server, "storage") end, indexer_thread)
