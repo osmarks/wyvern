@@ -133,7 +133,7 @@ local function query_by_ID(ID, request, tries)
     local result, tries
 
     repeat
-        rednet.send(id, request_object, protocol)
+        rednet.send(ID, request_object, protocol)
         _, result = rednet.receive(protocol, 1)
         sleep(1)
     until result ~= nil or tries >= max_tries
