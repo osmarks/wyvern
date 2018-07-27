@@ -82,10 +82,6 @@ local function init_screen(scr, bg, fg)
     scr.clear()
 end
 
-local function round_to_tenth(t)
-    return math.round(t*10)*0.1
-end
-
 -- Runs a Wyvern node server.
 -- First argument is a function to be run for requests. It will be provided the request data and must return the value to respond with.
 -- If it errors, an internal error will be returned.
@@ -128,7 +124,7 @@ local function serve(fn, node_type)
             else 
                 local end_time = os.clock()
                 print("Response:", textutils.serialise(result))
-                print("Time:", tostring(round_to_tenth(end_time - start_time)))
+                print("Time:", string.format("%.1f", end_time - start_time))
                 response = { type = "response", response = result }
             end
         else
