@@ -28,7 +28,7 @@ local function cache(item, chest, slot)
     if display_name_cache[idx] then
         return display_name_cache[idx]
     else
-		local n = chest.getItemMeta(slot).display_name
+		local n = chest.getItemMeta(slot).displayName
         display_name_cache[idx] = n
 		return n
     end
