@@ -106,6 +106,16 @@ local function fetch_by_location(loc, limit)
     return peripheral.call(conf.buffer_internal, "pullItems", peripheral_name, slot, limit, BUFFER_OUT_SLOT)
 end
 
+local function clear_buffer()
+    for i = 1, peripheral.call(conf.buffer_internal, "size") do
+        local space_location = find_space()
+        if not space_location then error("Storage capacity reached. Please add more chests or shulker boxes.") end
+        peripheral.call(conf.buffer, "pushItems", space_location, i)
+        os.queueEvent("reindex", space_location)
+        sleep()
+    end
+end
+
 local function server(command)
     if command.type == "buffers" then -- Sends the external address of the buffer
         return conf.buffer_external
@@ -117,28 +127,44 @@ local function server(command)
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
         local quantity_missing = 0
-        if not first_available then quantity_missing = command.quantity or 1
+        if not first_available then quantity_missing = command.quantity or "any"
         elseif command.quantity and command.quantity > first_available.item.count then quantity_missing = command.quantity - first_available.item.count end
         if quantity_missing > 0 then return w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing }) end
 
-        local items_moved = fetch_by_location(first_available.location, command.quantity)
+        local items_moved_from_storage = fetch_by_location(first_available.location, command.quantity)
 
-        update_index_for(first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+        os.queueEvent("reindex", first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
 
         if command.destination_inventory then
-            items_moved = peripheral.call(conf.buffer_external, "pushItems", command.destination_inventory, BUFFER_OUT_SLOT, command.quantity, command.destination_slot)
+            -- push items to destination
+            items_moved_to_destination = peripheral.call(conf.buffer_external, "pushItems", command.destination_inventory, BUFFER_OUT_SLOT, command.quantity, command.destination_slot)
+
+            -- If destination didn't accept all items, clear out the buffer.
+            if items_moved_to_destination < items_moved_from_storage then
+                clear_buffer()
+            end
         end
 
-        return { moved = items_moved, item = first_available.item }
+        return { moved = items_moved_to_destination or items_moved_from_storage, item = first_available.item }
+    elseif command.type == "insert" then
+        local inventory_with_space = find_space()
+        if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error
+
+        if command.from_inventory and command.from_slot then
+            peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT)
+        end
+
+        local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT)
+        return { moved = moved }
     end
 end
 
 local function indexer_thread()
     while true do
-        update_index()
-        os.pullEvent "reindex"
+        local _, inventory = os.pullEvent "reindex"
+        if inventory then update_index_for(inventory) else update_index() end
     end
 end
 
 w.init()
-parallel.waitForAll(function() w.serve(server, "storage") end, indexer_thread)
+parallel.waitForAll(function() os.queueEvent("reindex") w.serve(server, "storage") end, indexer_thread)
