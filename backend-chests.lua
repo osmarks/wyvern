@@ -102,11 +102,13 @@ local function search(query, threshold)
     return d.sort_by(results, function(x) return x.extra end) -- sort returned results by closeness to query
 end
 
+-- Retrives items from a location in storage and puts them in the buffer
 local function fetch_by_location(loc, limit)
     local peripheral_name, slot, limit = loc.inventory, loc.slot, limit or 64
     return peripheral.call(conf.buffer_internal, "pullItems", peripheral_name, slot, limit, BUFFER_OUT_SLOT)
 end
 
+-- Clears out the buffer into storage.
 local function clear_buffer()
     for i = 1, peripheral.call(conf.buffer_internal, "size") do
         local space_location = find_space()
@@ -152,10 +154,14 @@ local function server(command)
         if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error
 
         if command.from_inventory and command.from_slot then
-            peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT)
+            peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT) -- pull from from_inventory to buffer
         end
 
-        local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT)
+        local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT) -- push from buffer to free space
+
+        if moved == 0 then clear_buffer() end -- if for some reason it broke and there's no space, clear out buffer
+        os.queueEvent("reindex", inventory_with_space)
+
         return { moved = moved }
     end
 end
@@ -167,5 +173,6 @@ local function indexer_thread()
     end
 end
 
+clear_buffer()
 w.init()
 parallel.waitForAll(function() os.queueEvent("reindex") w.serve(server, "storage") end, indexer_thread)
