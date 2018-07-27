@@ -169,8 +169,8 @@ local function server(command)
         local out = {}
         for _, stack in pairs(matching_items) do
             local i = w.get_internal_identifier(stack)
-            if out[i] then out[i] = out[i] + stack.count
-            else out[i] = stack.count end
+            if out[i] then out[i].count = out[i].count + stack.count
+            else out[i] = stack end
         end
         return out
     end
