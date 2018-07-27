@@ -64,6 +64,17 @@ end
 
 local protocol = "wyvern"
 
+local lookup_cache = {}
+
+local function cached_lookup(protocol)
+    if lookup_cache[protocol] then return lookup_cache[protocol]
+    else 
+        local ID = rednet.lookup(protocol)
+        lookup_cache[protocol] = ID
+        return ID
+    end
+end
+
 local function init_screen(scr, bg, fg)
     scr.setCursorPos(1, 1)
     scr.setBackgroundColor(bg)
@@ -145,7 +156,7 @@ local function query_by_ID(ID, request, max_tries)
 end
 
 local function query_by_type(type, request, tries)
-    local ID = rednet.lookup(protocol .. "/" .. type)
+    local ID = cached_lookup(protocol .. "/" .. type)
     if not ID then return errors.make(errors.NOMATCHINGNODE, type) end
     return query_by_ID(ID, request, tries)
 end
