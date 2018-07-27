@@ -127,7 +127,7 @@ local function server(command)
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
         local quantity_missing = 0
-        if not first_available then quantity_missing = command.quantity or "any"
+        if not first_available then quantity_missing = command.quantity or 1
         elseif command.quantity and command.quantity > first_available.item.count then quantity_missing = command.quantity - first_available.item.count end
         if quantity_missing > 0 then return w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing }) end
 
