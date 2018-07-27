@@ -165,14 +165,9 @@ local function server(command)
 
         return { moved = moved }
     elseif command.type == "search" then
-        local matching_items =  d.map(search(command.query, command.threshold), function(x) return x.item end)
-        local out = {}
-        for _, stack in pairs(matching_items) do
-            local i = w.get_internal_identifier(stack)
-            if out[i] then out[i].count = out[i].count + stack.count
-            else out[i] = stack end
-        end
-        return out
+        return w.collate_stacks(d.map(search(command.query, command.threshold), function(x) return x.item end))
+    elseif command.type == "list" then
+        return index
     end
 end
 

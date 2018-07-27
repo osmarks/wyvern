@@ -182,6 +182,17 @@ local function collate(items)
     return ret
 end
 
+-- Functions like "collate" but on itemstacks (adds their counts)
+local function collate_stacks(s)
+    local out = {}
+    for _, stack in pairs(matching_items) do
+        local i = w.get_internal_identifier(stack)
+        if out[i] then out[i].count = out[i].count + stack.count
+        else out[i] = stack end
+    end
+    return out
+end
+
 -- Checks whether "needs"'s (a collate-formatted table) values are all greater than those of "has"
 local function satisfied(needs, has)
     local good = true
@@ -229,4 +240,4 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), function(p) rednet.open(p.name) end)
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
