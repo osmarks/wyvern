@@ -122,6 +122,9 @@ local function server(command)
         if quantity_missing > 0 then return w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing }) end
 
         local items_moved = fetch_by_location(first_available.location, command.quantity)
+
+        update_index_for(first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+
         if command.destination_inventory then
             items_moved = peripheral.call(conf.buffer_external, "pushItems", command.destination_inventory, BUFFER_OUT_SLOT, command.quantity, command.destination_slot)
         end
