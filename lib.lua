@@ -185,7 +185,7 @@ end
 -- Functions like "collate" but on itemstacks (adds their counts)
 local function collate_stacks(s)
     local out = {}
-    for _, stack in pairs(matching_items) do
+    for _, stack in pairs(s) do
         local i = w.get_internal_identifier(stack)
         if out[i] then out[i].count = out[i].count + stack.count
         else out[i] = stack end
