@@ -106,7 +106,7 @@ local function serve(fn, node_type)
         if type(message) == "table" and message.type and message.type == "request" and message.request then
             print("Request:", textutils.serialise(message.request))
 
-            local ok, result = pcall(fn, request)
+            local ok, result = pcall(fn, message.request)
             if not ok then 
                 response = errors.make(errors.INTERNAL, result)
                 print("Error:", textutils.serialise(result)) -- show error
