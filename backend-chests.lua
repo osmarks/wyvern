@@ -114,7 +114,7 @@ local function clear_buffer()
     for i = 1, peripheral.call(conf.buffer_internal, "size") do
         local space_location = find_space()
         if not space_location then error("Storage capacity reached. Please add more chests or shulker boxes.") end
-        peripheral.call(conf.buffer, "pushItems", space_location, i)
+        peripheral.call(conf.buffer_internal, "pushItems", space_location, i)
         os.queueEvent("reindex", space_location)
         sleep()
     end
@@ -126,7 +126,7 @@ local function server(command)
     elseif command.type == "reindex" then
         os.queueEvent "reindex"
     elseif command.type == "extract" then
-        local result = find_by_ID_meta(command.ID, command.meta, command.NBT)
+        local result = find_by_ID_meta_NBT(command.ID, command.meta, command.NBT)
         local first_available = result[1]
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
