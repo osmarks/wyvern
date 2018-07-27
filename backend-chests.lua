@@ -108,12 +108,18 @@ local function server(command)
     if command.type == "buffers" then -- Sends the external address of the buffer
         return conf.buffer_external
     elseif command.type == "reindex" then
-        update_index()
+        os.queueEvent "reindex"
     elseif command.type == "extract" then
         local result = find_by_ID_meta(command.ID, command.meta)
     end
 end
 
-update_index()
+local function indexer_thread()
+    while true do
+        update_index()
+        os.pullEvent "reindex"
+    end
+end
+
 w.init()
-w.serve(server, "storage")
+parallel.waitForAll(function() w.serve(server, "storage") end, indexer_thread)
