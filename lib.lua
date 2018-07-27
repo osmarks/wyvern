@@ -127,14 +127,16 @@ local function serve(fn, node_type)
 end
 
 -- Attempts to send "request" to "ID", with the maximum number of allowable tries being "tries"
-local function query_by_ID(ID, request, tries)
-    local max_tries = tries or 3
+local function query_by_ID(ID, request, max_tries)
+    local max_tries = max_tries or 3
     local request_object = { type = "request", request = request }
-    local result, tries
+    local result = nil
+    local tries = 0
 
     repeat
         rednet.send(ID, request_object, protocol)
         _, result = rednet.receive(protocol, 1)
+        tries = tries + 1
         sleep(1)
     until result ~= nil or tries >= max_tries
 
