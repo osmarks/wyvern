@@ -165,7 +165,8 @@ end
 
 -- Gets the internal identifier of an item - unique (hopefully) per type of item, as defined by NBT, metadata/damage and ID/name
 local function get_internal_identifier(item)
-    local n = item.name .. ":" .. item.damage
+    local n = item.name
+    if item.damage then n = n .. ":" .. item.damage end
     if item.nbtHash then n = n .. "#" .. item.nbtHash end
     return n
 end

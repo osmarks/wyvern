@@ -112,6 +112,20 @@ local function server(command)
         os.queueEvent "reindex"
     elseif command.type == "extract" then
         local result = find_by_ID_meta(command.ID, command.meta)
+        local first_available = result[1]
+
+        -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
+        local quantity_missing = 0
+        if not first_available then quantity_missing = command.quantity or 1
+        elseif command.quantity and command.quantity > first_available.item.count then quantity_missing = command.quantity - first_available.item.count end
+        if quantity_missing > 0 then return w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing }) end
+
+        local items_moved = fetch_by_location(first_available.location, command.quantity)
+        if command.destination_inventory then
+            items_moved = peripheral.call(conf.buffer_external, "pushItems", command.destination_inventory, BUFFER_OUT_SLOT, command.quantity, command.destination_slot)
+        end
+
+        return { moved = items_moved, item = first_available.item }
     end
 end
 
