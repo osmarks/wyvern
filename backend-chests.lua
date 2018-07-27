@@ -46,7 +46,7 @@ local function update_index_for(name)
     
     index[name] = data
 
-    print("Indexed", n)
+    print("Indexed", name)
 end
 
 -- Reindex all connected inventories
