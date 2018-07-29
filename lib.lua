@@ -225,9 +225,15 @@ local function load_config(required_data, defaults, filename)
 end
 
 -- Returns a list of peripheral objects whose type, name and object satisfy the given predicate
-local function find_peripherals(predicate)
+local function find_peripherals(predicate, from)
     local matching = {}
-    for k, name in pairs(peripheral.getNames()) do
+    local list
+    if from then
+        list = peripheral.call(from, "getNamesRemote")
+    else
+        list = peripheral.getNames()
+    end
+    for k, name in pairs(list) do
         local wrapped = peripheral.wrap(name)
         local type = peripheral.getType(name)
         if predicate(type, name, wrapped) then table.insert(matching, { wrapped = wrapped, name = name} ) end
