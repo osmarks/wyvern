@@ -8,7 +8,7 @@ local conf = w.load_config({
     "buffer_internal",
     "buffer_external"
 }, {
-    "modem_internal" = nil
+    modem_internal = nil
 })
 
 local BUFFER_OUT_SLOT = 1
