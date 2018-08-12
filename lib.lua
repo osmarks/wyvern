@@ -252,7 +252,7 @@ local function unwrap(x, msg)
 
     if x.type == "error" then
         local text = "An error occured"
-        if msg then text .. " " .. msg
+        if msg then text = text .. " " .. msg
         else text = text .. "!" end
         text = text .. ".\nDetails: " .. errors.format(x.error)
         error(text)
