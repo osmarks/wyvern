@@ -246,4 +246,19 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), function(p) rednet.open(p.name) end)
 end
 
+-- Rust-style unwrap. If x is a response type, will take out its contents and return them - if error, will crash and print it, with msg if provided
+local function unwrap(x, msg)
+    if not x or type(x) ~= "table" or not x.type then x = errors.make(errors.INTERNAL, "Error/response object is invalid. This is probably a problem with the node being contacted.") end
+
+    if x.type == "error" then
+        local text = "An error occured"
+        if msg then text .. " " .. msg
+        else text = text .. "!" end
+        text = text .. ".\nDetails: " .. errors.format(x.error)
+        error(text)
+    elseif x.type == "response" then
+        return x.response
+    end
+end
+
 return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }

@@ -1,6 +1,10 @@
 local w = require "lib"
 local d = require "luadash"
 
+local conf = w.load_config({
+    "network_name"
+})
+
 local function split_at_spaces(s)
     local t = {}
     for i in string.gmatch(s, "%S+") do
@@ -14,14 +18,35 @@ local function first_letter(s)
 end
 
 local usage = [[
-    Welcome to the Wyvern CLI Client, "Because Gollark Was Lazy".
-    All commands listed below can also be accessed using single-letter shortcuts for convenience.
+Welcome to the Wyvern CLI Client, "Because Gollark Was Lazy".
+All commands listed below can also be accessed using single-letter shortcuts for convenience.
+
+withdraw [quantity] [name] - withdraw [quantity] items with display names close to [name] from storage
+withdraw [items] - as above but withdraws all available matching items
 ]]
 
 local commands = {
-    help = function() print(usage) end
+    help = function() return usage end,
+    withdraw = function(number, ...)
+        local query_tokens = {...}
+        local quantity = math.huge
+        if tonumber(number) ~= nil then 
+            quantity = tonumber(number)
+        else
+            table.insert(query_tokens, 1, numbr)
+        end
+        local query = table.concat(query_tokens, " ") -- unsplit query
+
+        local items = w.query_by_type("storage", {
+            type = "search",
+            query = query
+        })
+    end
 }
 
+w.init()
+
+if not turtle then error "Wyvern CLI must be run on a turtle." end
 
 print "Wyvern CLI Client"
 
@@ -41,5 +66,6 @@ while true do
         print("Command", command, "not found.")
     end
 
-    fn(table.unpack(args))
+    local ok, result = pcall(fn(table.unpack(args)))
+    if result then textutils.pagedPrint(result) end
 end
