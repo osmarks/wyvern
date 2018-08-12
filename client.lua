@@ -66,6 +66,6 @@ while true do
         print("Command", command, "not found.")
     end
 
-    local ok, result = pcall(fn(table.unpack(args)))
+    local ok, result = pcall(fn, table.unpack(args))
     if result then textutils.pagedPrint(result) end
 end
