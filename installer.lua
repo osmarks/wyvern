@@ -29,4 +29,10 @@ if command == "update" then
 elseif command == "install" then
     install_wyvern()
     shell.run "edit wyvern_config.tbl" -- open editor for config edits
+    write "Program to run on startup |> "
+    local program = read()
+    local f = fs.open("startup", "w")
+    f.write('shell.run "' .. program .. '"')
+    f.close()
+    os.reboot()
 end
