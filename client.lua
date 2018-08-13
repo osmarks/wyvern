@@ -75,10 +75,10 @@ local commands = {
         local slot = tonumber(slot)
         if not slot then
             for i = 1, 16 do
-                unwrap(dump(i), "dumping inventory")
+                w.unwrap(dump(i), "dumping inventory")
             end
         else
-            unwrap(dump(slot), "dumping slot " .. tostring(slot))
+            w.unwrap(dump(slot), "dumping slot " .. tostring(slot))
         end
     end,
     craft = function()
@@ -86,7 +86,7 @@ local commands = {
         if not result then return "Invalid or no recipe." end
     end,
     reindex = function()
-        unwrap(w.query_by_type("storage", { type = "reindex" }), "requesting reindexing")
+        w.unwrap(w.query_by_type("storage", { type = "reindex" }), "requesting reindexing")
     end
 }
 
