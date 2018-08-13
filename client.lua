@@ -26,10 +26,11 @@ withdraw [quantity] [name] - withdraw [quantity] items with display names close 
 withdraw [items] - as above but withdraws all available matching items
 dump [slot] - dump stack in slot back to storage
 dump - dump whole inventory to storage
-craft - runs turtle.craft]]
+craft - runs turtle.craft
+reindex - force storage server to reindex its contents]]
 
 local function dump(slot)
-    w.query_by_type("storage", {
+    return w.query_by_type("storage", {
         type = "insert",
         from_slot = slot,
         from_inventory = conf.network_name
@@ -74,15 +75,18 @@ local commands = {
         local slot = tonumber(slot)
         if not slot then
             for i = 1, 16 do
-                dump(i)
+                unwrap(dump(i), "dumping inventory")
             end
         else
-            dump(slot)
+            unwrap(dump(slot), "dumping slot " .. tostring(slot))
         end
     end,
     craft = function()
         local result = turtle.craft()
         if not result then return "Invalid or no recipe." end
+    end,
+    reindex = function()
+        unwrap(w.query_by_type("storage", { type = "reindex" }), "requesting reindexing")
     end
 }
 
