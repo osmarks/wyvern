@@ -98,7 +98,7 @@ end
 local function search(query, threshold)
     local threshold = threshold or 4
     local results = find(function(item)
-        local distance = d.distance(query, item.display_name)
+        local distance = d.distance(string.lower(query), string.lower(item.display_name))
         if distance < threshold then
             return true, distance
         else return false end
