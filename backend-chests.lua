@@ -37,7 +37,7 @@ local function cache(item, chest, slot)
 end
 
 local function to_wyvern_item(plethora_item)
-    return { NBT = plethora_item.nbtHash, ID = plethora_item.name, damage = plethora_item, display_name = plethora_item.displayName, count = plethora_item.count }
+    return { NBT = plethora_item.nbtHash, ID = plethora_item.name, meta = plethora_item.damage, display_name = plethora_item.displayName, count = plethora_item.count }
 end
 
 local index = {}
