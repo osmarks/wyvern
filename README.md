@@ -2,6 +2,14 @@
 A centralized storage management system for Minecraft. Basically Dragon, rewritten for sanity and improved networking/error handling.
 Requires Plethora Peripherals by SquidDev (as that's what allows item transfer by wired network).
 
+## Goals
+1. Support big, multi-user setups.
+2. Work sanely and reliably even in bizarre edge cases.
+3. Be pretty fast.
+4. Function conveniently for end users.
+5. Be relatively easy to connect other systems to.
+6. Allow complex automation.
+
 ## Setup
 `installer.lua` is recommended for running everything.
 Get it with `wget https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/installer.lua`.
