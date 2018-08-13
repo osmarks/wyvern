@@ -163,8 +163,7 @@ local function server(command)
 
         local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT) -- push from buffer to free space
 
-        if moved == 0 then clear_buffer() end -- if for some reason it broke and there's no space, clear out buffer
-        os.queueEvent("reindex", inventory_with_space)
+        if moved > 0 then os.queueEvent("reindex", inventory_with_space) end -- only reindex if items were moved
 
         return { moved = moved }
     elseif command.type == "search" then
