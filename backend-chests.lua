@@ -136,7 +136,7 @@ local function server(command)
         local quantity_missing = 0
         if not first_available then quantity_missing = command.quantity or 1
         elseif command.quantity and command.quantity > first_available.item.count then quantity_missing = command.quantity - first_available.item.count end
-        if quantity_missing > 0 then return w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing }) end
+        if quantity_missing > 0 then error(w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing })) end
 
         local items_moved_from_storage = fetch_by_location(first_available.location, command.quantity)
 
