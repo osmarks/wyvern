@@ -23,7 +23,17 @@ local usage =
 All commands listed below can also be accessed using single-letter shortcuts for convenience.
 
 withdraw [quantity] [name] - withdraw [quantity] items with display names close to [name] from storage
-withdraw [items] - as above but withdraws all available matching items]]
+withdraw [items] - as above but withdraws all available matching items
+dump [slot] - dump stack in slot back to storage
+dump - dump whole inventory to storage]]
+
+local function dump(slot)
+    w.query_by_type("storage", {
+        type = "insert",
+        from_slot = slot,
+        from_inventory = conf.network_name
+    })
+end
 
 local commands = {
     help = function() return usage end,
@@ -57,6 +67,16 @@ local commands = {
                 quantity = quantity - moved
                 item_type.count = item_type.count - moved
             until quantity == 0 or item_type.count == 0
+        end
+    end,
+    dump = function(slot)
+        local slot = tonumber(slot)
+        if not slot then
+            for i = 1, 16 do
+                dump(i)
+            end
+        else
+            dump(slot)
         end
     end
 }
