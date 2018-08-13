@@ -37,10 +37,29 @@ local commands = {
         end
         local query = table.concat(query_tokens, " ") -- unsplit query
 
-        local items = w.query_by_type("storage", {
+        local items = unwrap(w.query_by_type("storage", {
             type = "search",
             query = query
-        })
+        }), "searching for items")
+
+        for _, item_type in pairs(items) do
+            do
+                local max_quantity
+                if quantity < 64 then max_quantity = quantity end
+                local moved = unwrap(w.query_by_type("storage", {
+                    type = "extract",
+                    ID = item_type.ID
+                    meta = item_type.meta
+                    NBT_hash = item_type.NBT_hash,
+                    quantity = max_quantity,
+                    destination_inventory = conf.network_name
+                }), "extracting a stack").moved
+                quantity = quantity - moved
+                item_type.count = item_type.count - moved
+            until quantity == 0 or item_type.count == 0
+        end
+
+        if quantity == 0 then break end
     end
 }
 
