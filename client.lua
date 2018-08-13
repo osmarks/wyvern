@@ -37,7 +37,7 @@ local commands = {
         end
         local query = table.concat(query_tokens, " ") -- unsplit query
 
-        local items = unwrap(w.query_by_type("storage", {
+        local items = w.unwrap(w.query_by_type("storage", {
             type = "search",
             query = query
         }), "searching for items")
@@ -46,7 +46,7 @@ local commands = {
             repeat
                 local max_quantity
                 if quantity < 64 then max_quantity = quantity end
-                local moved = unwrap(w.query_by_type("storage", {
+                local moved = w.unwrap(w.query_by_type("storage", {
                     type = "extract",
                     ID = item_type.ID,
                     meta = item_type.meta,
@@ -58,8 +58,6 @@ local commands = {
                 item_type.count = item_type.count - moved
             until quantity == 0 or item_type.count == 0
         end
-
-        if quantity == 0 then break end
     end
 }
 
