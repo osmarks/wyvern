@@ -48,3 +48,7 @@ Configuration is stored in `wyvern_config.tbl` in lua table syntax as used by `t
 * If you try and extract items when the storage server is still starting up, it may fail, as not all chests will have been indexed yet.
 * There are currently small problems with extracting certain quantities of items from storage. Yes, it should probably be by stack.
 * Yes, I am kind of using git wrong, but editing networked CC programs sanely is *very hard*. Tell me if you find a better solution.
+
+## Usage
+Once configured, the chest backend can just be plugged in and ignored, unless it explodes.
+For help using the client, run `help` or `h`.
