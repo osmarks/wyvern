@@ -266,4 +266,4 @@ local function unwrap(x, msg)
     end
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, unwrap = unwrap, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
