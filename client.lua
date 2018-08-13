@@ -64,8 +64,8 @@ while true do
     end
     if not fn then
         print("Command", command, "not found.")
+    else
+        local ok, result = pcall(fn, table.unpack(args))
+        if result then textutils.pagedPrint(result) end
     end
-
-    local ok, result = pcall(fn, table.unpack(args))
-    if result then textutils.pagedPrint(result) end
 end
