@@ -56,15 +56,16 @@ while true do
     write "|> "
     local text = readline(nil, history)
 
-    table.insert(history, text)
+    if text ~= "" then table.insert(history, text) end
 
     local tokens = split_at_spaces(text)
+
     local command = tokens[1]
     local args = d.tail(tokens)
     local fn = commands[command]
     if not fn then
         for command_name, func in pairs(commands) do
-            if first_letter(command_name) == first_letter(command) then fn = func end
+            if command and first_letter(command_name) == first_letter(command) then fn = func end
         end
     end
     if not fn then
