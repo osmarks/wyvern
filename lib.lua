@@ -119,7 +119,8 @@ local function serve(fn, node_type)
 
             local ok, result = pcall(fn, message.request)
             if not ok then 
-                response = errors.make(errors.INTERNAL, result)
+                if type(result) ~= "table" or not result.error then response = errors.make(errors.INTERNAL, result)
+                else response = result end
                 print("Error:", textutils.serialise(result)) -- show error
             else 
                 local end_time = os.clock()
