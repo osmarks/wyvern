@@ -36,8 +36,8 @@ local function cache(item, chest, slot)
     end
 end
 
-local function to_wyvern_item(plethora_item)
-    return { NBT = plethora_item.nbtHash, ID = plethora_item.name, meta = plethora_item.damage, display_name = plethora_item.displayName, count = plethora_item.count }
+local function to_wyvern_item(item)
+    return { NBT_hash = item.NBT_hash or item.nbtHash, ID = item.ID or item.name, meta = item.meta or item.damage, display_name = item.display_name or item.displayName, count = item.count }
 end
 
 local index = {}
@@ -90,12 +90,12 @@ local function find_space()
     end
 end
 
-local function find_by_ID_meta_NBT(ID, meta, NBT)
+local function find_by_ID_meta_NBT(ID, meta, NBT_hash)
     return find(function(item)
         return 
             (not meta or item.meta == meta) and -- if metadata provided, ensure match
             (not ID or item.ID == ID) and -- if internal name provided, ensure match
-            (not NBT or item.NBT == NBT) -- if NBT hash provided, ensure match
+            (not NBT_hash or item.NBT_hash == NBT_hash) -- if NBT hash provided, ensure match
     end)
 end
 
@@ -133,7 +133,7 @@ local function server(command)
     elseif command.type == "reindex" then
         os.queueEvent "reindex"
     elseif command.type == "extract" then
-        local result = find_by_ID_meta_NBT(command.ID, command.meta, command.NBT)
+        local result = find_by_ID_meta_NBT(command.ID, command.meta, command.NBT_hash)
         local first_available = result[1]
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
