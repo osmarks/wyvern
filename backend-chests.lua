@@ -36,10 +36,6 @@ local function cache(item, chest, slot)
     end
 end
 
-local function to_wyvern_item(item)
-    return { NBT_hash = item.NBT_hash or item.nbtHash, ID = item.ID or item.name, meta = item.meta or item.damage, display_name = item.display_name or item.displayName, count = item.count }
-end
-
 local index = {}
 -- Update the index for the given peripheral
 local function update_index_for(name)
@@ -47,7 +43,7 @@ local function update_index_for(name)
     local data = inv.list()
     
     for slot, item in pairs(data) do
-        data[slot] = to_wyvern_item(data[slot])
+        data[slot] = w.to_wyvern_item(data[slot])
         data[slot].display_name = cache(item, inv, slot)
     end
     
@@ -156,7 +152,7 @@ local function server(command)
             end
         end
 
-        return { moved = items_moved_to_destination or items_moved_from_storage, item = to_wyvern_item(first_available.item) }
+        return { moved = items_moved_to_destination or items_moved_from_storage, item = w.to_wyvern_item(first_available.item) }
     elseif command.type == "insert" then
         local inventory_with_space = find_space()
         if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error

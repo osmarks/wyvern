@@ -163,6 +163,11 @@ end
 
 -- PLETHORA HELPERS
 
+-- Converts a plethora item (as in a slot) to a Wyvern item
+local function to_wyvern_item(item)
+    return { NBT_hash = item.NBT_hash or item.nbtHash, ID = item.ID or item.name, meta = item.meta or item.damage, display_name = item.display_name or item.displayName, count = item.count }
+end
+
 -- Gets the internal identifier of an item - unique (hopefully) per type of item, as defined by NBT, metadata/damage and ID/name
 local function get_internal_identifier(item)
     local n = item.name
@@ -261,4 +266,4 @@ local function unwrap(x, msg)
     end
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
