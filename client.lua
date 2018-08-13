@@ -33,7 +33,7 @@ local commands = {
         if tonumber(number) ~= nil then 
             quantity = tonumber(number)
         else
-            table.insert(query_tokens, 1, numbr)
+            table.insert(query_tokens, 1, number)
         end
         local query = table.concat(query_tokens, " ") -- unsplit query
 
