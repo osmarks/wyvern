@@ -55,7 +55,7 @@ local commands = {
         }), "searching for items")
 
         for _, item_type in pairs(items) do
-            repeat
+            while quantity > 0 and item_type.count > 0 do
                 local max_quantity
                 if quantity < 64 then max_quantity = quantity end
                 local moved = w.unwrap(w.query_by_type("storage", {
@@ -68,7 +68,7 @@ local commands = {
                 }), "extracting a stack").moved
                 quantity = quantity - moved
                 item_type.count = item_type.count - moved
-            until quantity == 0 or item_type.count == 0
+            end
         end
     end,
     dump = function(slot)
