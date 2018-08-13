@@ -4,7 +4,7 @@ Requires Plethora Peripherals by SquidDev (as that's what allows item transfer b
 
 ## Setup
 `installer.lua` is recommended for running everything.
-Get it with `https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/installer.lua`.
+Get it with `wget https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/installer.lua`.
 
 Run `installer install` to download everything. It will open an editor for the config file, allowing setup of a node.
 When prompted for a program to run on startup, say `client` to configure it as a client or `backend-chests` to run the chest backend.
