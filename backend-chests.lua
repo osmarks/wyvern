@@ -93,9 +93,9 @@ end
 local function find_by_ID_meta_NBT(ID, meta, NBT)
     return find(function(item)
         return 
-            (not meta or item.damage == meta) and -- if metadata provided, ensure match
-            (not ID or item.name == ID) and -- if internal name provided, ensure match
-            (not NBT or item.nbtHash == NBT) -- if NBT hash provided, ensure match
+            (not meta or item.meta == meta) and -- if metadata provided, ensure match
+            (not ID or item.ID == ID) and -- if internal name provided, ensure match
+            (not NBT or item.NBT == NBT) -- if NBT hash provided, ensure match
     end)
 end
 
