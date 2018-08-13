@@ -32,9 +32,9 @@ errors.format = function(e)
         return "Internal error - provided info: " .. textutils.serialise(e.data) .. "."
     elseif e.error == errors.INVALID then
         return "Request invalid."
-    elseif e.errors == errors.NOPATTERN then
+    elseif e.error == errors.NOPATTERN then
         return "Missing pattern " .. textutils.serialise(e.data) .. "."
-    elseif e.errors == errors.NOITEMS then
+    elseif e.error == errors.NOITEMS then
         local thing_missing = "???"
         if type(e.data) == "table" and e.data.type and e.data.quantity then
             thing_missing = tostring(e.data.quantity) .. " " .. e.data.type
@@ -43,17 +43,17 @@ errors.format = function(e)
         end
 
         return "Missing " .. thing_missing .. " to fulfil request."
-    elseif e.errors == errors.NORESPONSE then
+    elseif e.error == errors.NORESPONSE then
         local text = "No response"
         if e.data then text = text .. " from " .. textutils.serialise(e.data) end
         return text .. "."
-    elseif e.errors == errors.NOMATCHINGNODE then
+    elseif e.error == errors.NOMATCHINGNODE then
         if e.data then
             return "No " .. textutils.serialise(e.data) .. " node found."
         else
             return "No node of desired type found."
         end
-    elseif e.errors == errors.NOSPACE then
+    elseif e.error == errors.NOSPACE then
         return "No available storage space."
     else
         return "Error is invalid. Someone broke it."
@@ -259,7 +259,7 @@ local function unwrap(x, msg)
         local text = "An error occured"
         if msg then text = text .. " " .. msg
         else text = text .. "!" end
-        text = text .. ".\nDetails: " .. errors.format(x.error)
+        text = text .. ".\nDetails: " .. errors.format(x)
         error(text)
     elseif x.type == "response" then
         return x.response
