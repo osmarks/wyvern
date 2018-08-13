@@ -25,7 +25,8 @@ All commands listed below can also be accessed using single-letter shortcuts for
 withdraw [quantity] [name] - withdraw [quantity] items with display names close to [name] from storage
 withdraw [items] - as above but withdraws all available matching items
 dump [slot] - dump stack in slot back to storage
-dump - dump whole inventory to storage]]
+dump - dump whole inventory to storage
+craft - runs turtle.craft]]
 
 local function dump(slot)
     w.query_by_type("storage", {
@@ -78,6 +79,10 @@ local commands = {
         else
             dump(slot)
         end
+    end,
+    craft = function()
+        local result = turtle.craft()
+        if not result then return "Invalid or no recipe." end
     end
 }
 
