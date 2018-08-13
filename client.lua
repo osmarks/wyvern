@@ -43,7 +43,7 @@ local commands = {
         }), "searching for items")
 
         for _, item_type in pairs(items) do
-            do
+            repeat
                 local max_quantity
                 if quantity < 64 then max_quantity = quantity end
                 local moved = unwrap(w.query_by_type("storage", {
