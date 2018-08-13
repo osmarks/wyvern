@@ -52,3 +52,9 @@ Configuration is stored in `wyvern_config.tbl` in lua table syntax as used by `t
 ## Usage
 Once configured, the chest backend can just be plugged in and ignored, unless it explodes.
 For help using the client, run `help` or `h`.
+
+## Coming Soon(ish) (maybe)
+* Audit log on server - see when items were moved.
+* Overlay glasses/introspection module client.
+* Autocrafting (just a port from Dragon's).
+* Autosmelting (basically autocrafting).
