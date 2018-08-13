@@ -1,5 +1,6 @@
 local w = require "lib"
 local d = require "luadash"
+local readline = require "readline"
 
 local conf = w.load_config({
     "network_name"
@@ -17,13 +18,12 @@ local function first_letter(s)
     return string.sub(s, 1, 1)
 end
 
-local usage = [[
-Welcome to the Wyvern CLI Client, "Because Gollark Was Lazy".
+local usage = 
+[[Welcome to the Wyvern CLI Client, "Because Gollark Was Lazy".
 All commands listed below can also be accessed using single-letter shortcuts for convenience.
 
 withdraw [quantity] [name] - withdraw [quantity] items with display names close to [name] from storage
-withdraw [items] - as above but withdraws all available matching items
-]]
+withdraw [items] - as above but withdraws all available matching items]]
 
 local commands = {
     help = function() return usage end,
@@ -50,9 +50,14 @@ if not turtle then error "Wyvern CLI must be run on a turtle." end
 
 print "Wyvern CLI Client"
 
+local history = {}
+
 while true do
     write "|> "
-    local text = read()
+    local text = readline(nil, history)
+
+    table.insert(history, text)
+
     local tokens = split_at_spaces(text)
     local command = tokens[1]
     local args = d.tail(tokens)
