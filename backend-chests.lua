@@ -44,7 +44,7 @@ local function update_index_for(name)
     
     for slot, item in pairs(data) do
         data[slot] = w.to_wyvern_item(data[slot])
-        data[slot].display_name = cache(item, inv, slot)
+        data[slot].display_name = cache(data[slot], inv, slot)
     end
     
     index[name] = data
