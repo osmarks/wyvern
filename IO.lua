@@ -3,8 +3,10 @@ local w = require "lib"
 
 local conf = w.load_config({
     "chest",
-    "items"
+    "items",
+    "sleep_time"
 }, {
+    sleep_time = 1
     items = {}
 })
 
@@ -35,4 +37,6 @@ while true do
             })
         end
     end
+
+    sleep(conf.sleep_time)
 end
