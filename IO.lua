@@ -6,7 +6,7 @@ local conf = w.load_config({
     "items",
     "sleep_time"
 }, {
-    sleep_time = 1
+    sleep_time = 1,
     items = {}
 })
 
