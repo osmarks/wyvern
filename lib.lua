@@ -126,7 +126,7 @@ local function serve(fn, node_type)
                 local end_time = os.clock()
                 print("Response:", textutils.serialise(result))
                 print("Time:", string.format("%.1f", end_time - start_time))
-                response = { type = "response", response = result }
+                response = { type = "OK", value = result }
             end
         else
             print("Request Invalid")
@@ -252,7 +252,7 @@ local function init()
     d.map(find_peripherals(function(type, name, wrapped) return type == "modem" end), function(p) rednet.open(p.name) end)
 end
 
--- Rust-style unwrap. If x is a response type, will take out its contents and return them - if error, will crash and print it, with msg if provided
+-- Rust-style unwrap. If x is an OK table, will take out its contents and return them - if error, will crash and print it, with msg if provided
 local function unwrap(x, msg)
     if not x or type(x) ~= "table" or not x.type then x = errors.make(errors.INTERNAL, "Error/response object is invalid. This is probably a problem with the node being contacted.") end
 
@@ -262,9 +262,15 @@ local function unwrap(x, msg)
         else text = text .. "!" end
         text = text .. ".\nDetails: " .. errors.format(x)
         error(text)
-    elseif x.type == "response" then
-        return x.response
+    elseif x.type == "OK" then
+        return x.value
     end
 end
 
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, unwrap = unwrap, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks }
+-- Wrap x in an OK result
+local function make_OK(x)
+    return { type = "OK", value = x }
+end
+
+-- TODO: Not do this
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, unwrap = unwrap, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks, make_error = errors.make, make_OK = make_OK }

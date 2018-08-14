@@ -3,6 +3,7 @@
 
 local w = require "lib"
 local d = require "luadash"
+local fuzzy_match = require "fuzzy"
 
 local conf = w.load_config({
     "buffer_internal",
@@ -96,12 +97,9 @@ local function find_by_ID_meta_NBT(ID, meta, NBT_hash)
 end
 
 local function search(query, threshold)
-    local threshold = threshold or 4
     local results = find(function(item)
-        local distance = d.distance(string.lower(query), string.lower(item.display_name))
-        if distance < threshold then
-            return true, distance
-        else return false end
+        local match, best_start = fuzzy_match(item.display_name, query)
+        if best_start ~= nil and match > 0 then return true, match end
     end)
     return d.sort_by(results, function(x) return x.extra end) -- sort returned results by closeness to query
 end
