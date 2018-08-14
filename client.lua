@@ -66,6 +66,9 @@ local commands = {
                     quantity = max_quantity,
                     destination_inventory = conf.network_name
                 }), "extracting a stack").moved
+                if moved == 0 then -- inventory full
+                    quantity = 0
+                end
                 quantity = quantity - moved
                 item_type.count = item_type.count - moved
             end
