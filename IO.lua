@@ -15,7 +15,7 @@ w.init()
 local chest = peripheral.wrap(conf.chest)
 
 while true do
-    local stacks_stored = chest.list()
+    local stacks_stored = d.map(chest.list(), w.to_wyvern_item)
     local items_stored = w.collate_stacks(stacks_stored)
 
     for item_name, quantity_desired in pairs(conf.items) do
