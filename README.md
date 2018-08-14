@@ -39,6 +39,7 @@ Client  Client  Client
 * **Server** is a computer running `backend-chests`. Other backends may eventually become available. It must be connected to the chests, clients, and both sides of the buffers.
 * **Client** is a crafty turtle running `client`. It must be connected to the server and external side of the buffers.
 * **Processing** will be used for autocrafting systems. It is not yet implemented.
+* **IO** units should be computers connected to chests.
 
 ### Configuration
 Configuration is stored in `wyvern_config.tbl` in lua table syntax as used by `textutils.(un)serialise`.
@@ -50,6 +51,10 @@ Configuration is stored in `wyvern_config.tbl` in lua table syntax as used by `t
 `buffer_internal` must contain the network name of the buffer on the chest side.
 `buffer_external` must contain the network name of the buffer on the client side.
 `modem_internal` can contain the network name of the server on the chest side. This is only required if your network contains chests on the client side which are connected.
+
+#### IO
+`chest` must contain the network name of some sort of storage device to use for item IO.
+`items` must can contain the desired quantities of each item, with the item name in "minecraft:cobblestone:0" format as the key and desired quantity as value.
 
 ## Warnings
 * Inserting/extracting items manually into/out of chests will result in the index being desynchronised with the actual items. To correct the index, run `reindex` in the CLI client.
