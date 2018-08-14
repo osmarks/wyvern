@@ -280,4 +280,4 @@ local function make_OK(x)
 end
 
 -- TODO: Not do this
-return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, unwrap = unwrap, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks, make_error = errors.make, make_OK = make_OK }
+return { errors = errors, serve = serve, query_by_ID = query_by_ID, query_by_type = query_by_type, unwrap = unwrap, to_wyvern_item = to_wyvern_item, get_internal_identifier = get_internal_identifier, load_config = load_config, find_peripherals = find_peripherals, init = init, collate = collate, satisfied = satisfied, collate_stacks = collate_stacks, make_error = errors.make, make_OK = make_OK, string_to_item = string_to_item }
