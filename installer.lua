@@ -1,6 +1,6 @@
 local wyvern_files = {
     root = "https://osmarks.tk/git/osmarks/wyvern/raw/branch/master/",
-    files = { "installer.lua", "luadash.lua", "readline.lua", "lib.lua", "backend-chests.lua", "client.lua" }
+    files = { "installer.lua", "luadash.lua", "readline.lua", "lib.lua", "backend-chests.lua", "client.lua", "fuzzy.lua" }
 }
 
 local args = {...}
