@@ -29,7 +29,7 @@ while true do
     end
 
     for slot, item in pairs(stacks_stored) do
-        if not items[w.get_internal_identifier(item)] then -- if item is not in want list, send it back to storage
+        if not conf.items[w.get_internal_identifier(item)] then -- if item is not in want list, send it back to storage
             w.query_by_type("storage", {
                 type = "insert",
                 from_inventory = conf.chest,
