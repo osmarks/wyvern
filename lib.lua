@@ -177,6 +177,13 @@ local function get_internal_identifier(item)
     return n
 end
 
+-- Inverse of get_internal_identifier - parses that kind of string into ID/meta/NBT
+local function string_to_item(s)
+    local mod, item, meta, NBT = string.match(s, "(%a+):(%a+):([0-9]+)#([0-9a-f]+)")
+    if not mod or not item or not meta then error(w.errors.make(w.errors.INTERNAL, "string did not match regex")) end
+    return { ID = mod .. ":" .. item, meta = meta, NBT = NBT }
+end
+
 -- GENERAL STUFF
 
 -- Converts a table of the form {"x", "x", "y"} into {x = 2, y = 1}
