@@ -187,7 +187,7 @@ local function server(command)
 
         local item = w.to_wyvern_item(peripheral.call(conf.buffer_internal, "getItemMeta", BUFFER_IN_SLOT))
 
-        join(item, cache(item, conf.buffer_internal, BUFFER_IN_SLOT))
+        w.join(item, cache(item, conf.buffer_internal, BUFFER_IN_SLOT))
         local space_locations = find_space(quantity, item) -- command contains item-related stuff
 
         local moved = 0
