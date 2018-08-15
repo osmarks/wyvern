@@ -23,7 +23,7 @@ while true do
         if quantity_desired > quantity_stocked then -- if we have fewer items than are desired, extract some from store
             local request = w.string_to_item(item_name)
             request.type = "extract"
-            request.destination_inventory = w.chest
+            request.destination_inventory = conf.chest
             local result = w.unwrap(w.query_by_type("storage", request), "extracting items")
             print("Moved", result.moved, item_name, "from storage.")
         end
