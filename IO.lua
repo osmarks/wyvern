@@ -35,7 +35,7 @@ while true do
 
     for slot, item in pairs(stacks_stored) do
         local ii = w.get_internal_identifier(item)
-        local stored = items_stored[ii] or 0
+        local stored = (items_stored[ii] or {count = 0}).count
         local wanted = conf.items[ii] or 0
         if (get_num_stacks(stored) * 64) >= wanted then -- if item is not in want list or we have too many, send it back to storage
             local result = w.unwrap(w.query_by_type("storage", {
