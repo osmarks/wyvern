@@ -20,7 +20,7 @@ local inventories = d.map_with_key(w.find_peripherals(function(type, name, wrapp
     return string.find(name, "chest") or string.find(name, "shulker")
 end, conf.modem_internal), function(_, p) return p.name, p.wrapped end)
 
-local display_name_cache = {}
+local info_cache = {}
 
 -- Gets the display name of the given item (in the given chest peripheral & slot)
 -- If its name is not cached, cache it.
@@ -29,11 +29,11 @@ local function cache(item, chest, slot)
     local idx = w.get_internal_identifier(item)
     
     if display_name_cache[idx] then
-        return display_name_cache[idx]
+        return info_cache[idx]
     else
-		local n = chest.getItemMeta(slot).displayName
-        display_name_cache[idx] = n
-		return n
+		local info = chest.getItemMeta(slot)
+        info_cache[idx] = { display_name = info.displayName, max_count = info.maxCount }
+		return info_cache[idx]
     end
 end
 
@@ -45,7 +45,7 @@ local function update_index_for(name)
     
     for slot, item in pairs(data) do
         data[slot] = w.to_wyvern_item(data[slot])
-        data[slot].display_name = cache(data[slot], inv, slot)
+        w.join(data[slot], cache(item, inv, slot))
     end
     
     index[name] = data
@@ -79,12 +79,21 @@ local function find(predicate)
 end
 
 -- Finds space in the chest system. Returns the name of an inventory which has space.
-local function find_space()
+local function find_space(quantity, item)
+    local locations = {}
     for name, items in pairs(index) do
-        if #items < inventories[name].size() then
-            return name
+        for i = 1, inventories[name].size() do
+            local item_in_slot = index[name][i]
+            if not item_in_slot or (item_in_slot.ID == item.ID and item_in_slot.meta == item.meta and item.NBT_hash == item_in_slot == NBT.hash) then -- slot is free or contains same type of item
+                table.insert(locations, { inventory = name, slot = i })
+                local available_space = item.max_count
+                if item_in_slot then available_space = available_space - item_in_slot.count end
+                quantity = quantity - available_space
+                if quantity <= 0 then return locations end
+            end
         end
     end
+    error(w.errors.make(w.errors.NOSPACE))
 end
 
 local function find_by_ID_meta_NBT(ID, meta, NBT_hash)
@@ -125,6 +134,12 @@ local function clear_buffer()
     end
 end
 
+local function update_slot(inv, slot, by)
+    index[inv][slot].count = index[inv][slot].count - by
+    if index[inv][slot].count == 0 then index[inv][slot] = nil
+    elseif index[inv][lot].count < 0 then os.queueEvent "reindex" error "Index inconsistency error." end
+end
+
 local function server(command)
     if command.type == "buffers" then -- Sends the external address of the buffer
         return conf.buffer_external
@@ -147,10 +162,9 @@ local function server(command)
             table.insert(stacks, stack_to_pull)
             items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
 
+            -- update index
             local location = stack_to_pull.location
-            index[location.inventory][location.slot].count = index[location.inventory][location.slot].count - items_moved_from_storage
-            if index[location.inventory][location.slot].count == 0 then index[location.inventory][location.slot] = nil
-            elseif index[location.inventory][location.slot].count < 0 then error "Index inconsistency error." end
+            update_slot(location.inventory, location.slot, items_moved_from_storage)
         until items_moved_from_storage >= quantity_to_fetch_remaining
         
         if command.destination_inventory then
@@ -165,16 +179,22 @@ local function server(command)
         
         return { moved = items_moved_to_destination or items_moved_from_storage, stacks = stacks_moved }
     elseif command.type == "insert" then
-        local inventory_with_space = find_space()
-        if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error
-        
         if command.from_inventory and command.from_slot then
             peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT) -- pull from from_inventory to buffer
         end
         
-        local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT) -- push from buffer to free space
-        
-        if moved > 0 then os.queueEvent("reindex", inventory_with_space) end -- only reindex if items were moved
+        local quantity = peripheral.call(conf.buffer_external, "pullItems", conf.buffer_external, BUFFER_IN_SLOT, 64, BUFFER_IN_SLOT) -- send to itself to get stack size
+
+        local item = w.to_wyvern_item(peripheral.call(conf.buffer_internal, "getItemMeta", BUFFER_IN_SLOT))
+
+        join(item, cache(item, conf.buffer_internal, BUFFER_IN_SLOT))
+        local space_locations = find_space(quantity, item) -- command contains item-related stuff
+
+        local moved = 0
+
+        for _, loc in pairs(space_locations) do
+            moved = moved + peripheral.call(conf.buffer_internal, "pushItems", loc.inventory, BUFFER_IN_SLOT, 64, loc.slot) -- push from buffer to free space
+        end
         
         return { moved = moved }
     elseif command.type == "search" then
