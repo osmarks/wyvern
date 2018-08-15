@@ -55,7 +55,8 @@ local commands = {
 
         local items = w.unwrap(w.query_by_type("storage", {
             type = "search",
-            query = query
+            query = query,
+            exact = exact
         }), "searching for items")
 
         for _, item_type in pairs(items) do
@@ -69,7 +70,6 @@ local commands = {
                     NBT_hash = item_type.NBT_hash,
                     quantity = max_quantity,
                     destination_inventory = conf.network_name,
-                    exact = exact
                 }), "extracting a stack").moved
                 if moved == 0 then -- inventory full
                     quantity = 0
