@@ -19,7 +19,7 @@ local function get_num_stacks(total_items)
 end
 
 while true do
-    local stacks_stored = d.map(chest.list(), w.to_wyvern_item)
+    local stacks_stored = d.map(d.filter(chest.list(), function(x) return x ~= nil end), w.to_wyvern_item)
     local items_stored = w.collate_stacks(stacks_stored)
 
     local function get_item_count(ii)
