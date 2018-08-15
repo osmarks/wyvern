@@ -146,6 +146,8 @@ local function server(command)
             
             table.insert(stacks, stack_to_pull)
             items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
+
+            local location = stack_to_pull.location
             index[location.inventory][location.slot].count = index[location.inventory][location.slot].count - items_moved_from_storage
             if index[location.inventory][location.slot].count == 0 then index[location.inventory][location.slot] = nil
             elseif index[location.inventory][location.slot].count < 0 then error "Index inconsistency error." end
