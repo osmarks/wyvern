@@ -261,10 +261,18 @@ local function init()
 end
 
 -- Rust-style unwrap. If x is an OK table, will take out its contents and return them - if error, will crash and print it, with msg if provided
-local function unwrap(x, msg)
+local function unwrap(x, msg, ignore)
     if not x or type(x) ~= "table" or not x.type then x = errors.make(errors.INTERNAL, "Error/response object is invalid. This is probably a problem with the node being contacted.") end
 
     if x.type == "error" then
+        if ignore then
+            for _, etype in pairs(ignore) do
+                if x.error == etype then
+                    return
+                end
+            end
+        end
+
         local text = "An error occured"
         if msg then text = text .. " " .. msg
         else text = text .. "!" end
