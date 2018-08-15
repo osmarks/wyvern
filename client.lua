@@ -48,6 +48,10 @@ local commands = {
             table.insert(query_tokens, 1, number)
         end
         local query = table.concat(query_tokens, " ") -- unsplit query
+        local exact = false
+
+        local query_match = string.match(query, "!(.*)")
+        if query_match ~= nil then query = query_match exact = true end
 
         local items = w.unwrap(w.query_by_type("storage", {
             type = "search",
@@ -64,7 +68,8 @@ local commands = {
                     meta = item_type.meta,
                     NBT_hash = item_type.NBT_hash,
                     quantity = max_quantity,
-                    destination_inventory = conf.network_name
+                    destination_inventory = conf.network_name,
+                    exact = exact
                 }), "extracting a stack").moved
                 if moved == 0 then -- inventory full
                     quantity = 0
