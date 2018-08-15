@@ -18,7 +18,7 @@ local function get_num_stacks(total_items)
     return math.ceil(total_items / 64)
 end
 
-local get_stacks()
+local function get_stacks()
     local s = d.map(d.filter(chest.list(), function(x) return x ~= nil end), w.to_wyvern_item)
     return s, w.collate_stacks(s)
 end
