@@ -28,7 +28,7 @@ local info_cache = {}
 local function cache(item, chest, slot)
     local idx = w.get_internal_identifier(item)
     
-    if display_name_cache[idx] then
+    if info_cache[idx] then
         return info_cache[idx]
     else
 		local info = chest.getItemMeta(slot)
