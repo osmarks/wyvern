@@ -54,7 +54,6 @@ local function main()
                     from_slot = slot
                 }), "inserting items")
                 if result then print("Moved", result.moved, ii, "to storage.") end
-                stacks_stored, items_stored = get_stacks()
             end
         end
         
