@@ -31,7 +31,7 @@ while true do
 
     for slot, item in pairs(stacks_stored) do
         local ii = w.get_internal_identifier(item)
-        if not conf.items[ii] or stacks_stored[ii] > (64 + conf_items[ii]) then -- if item is not in want list, send it back to storage
+        if not conf.items[ii] or stacks_stored[ii] > (64 + conf.items[ii]) then -- if item is not in want list, send it back to storage
             local result = w.unwrap(w.query_by_type("storage", {
                 type = "insert",
                 from_inventory = conf.chest,
