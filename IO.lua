@@ -14,6 +14,10 @@ w.init()
 
 local chest = peripheral.wrap(conf.chest)
 
+local function get_num_stacks(total_items)
+    return math.ceil(total_items / 64)
+end
+
 while true do
     local stacks_stored = d.map(chest.list(), w.to_wyvern_item)
     local items_stored = w.collate_stacks(stacks_stored)
@@ -31,7 +35,9 @@ while true do
 
     for slot, item in pairs(stacks_stored) do
         local ii = w.get_internal_identifier(item)
-        if not conf.items[ii] or stacks_stored[ii] > (64 + conf.items[ii]) then -- if item is not in want list, send it back to storage
+        local stored = stacks_stored[ii] or 0
+        local wanted = conf.items[ii] or 0
+        if (get_num_stacks(stored) * 64) > wanted then -- if item is not in want list or we have too many, send it back to storage
             local result = w.unwrap(w.query_by_type("storage", {
                 type = "insert",
                 from_inventory = conf.chest,
