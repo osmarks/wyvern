@@ -19,7 +19,7 @@ while true do
     local items_stored = w.collate_stacks(stacks_stored)
 
     for item_name, quantity_desired in pairs(conf.items) do
-        local quantity_stocked = items_stored[item_name] or 0
+        local quantity_stocked = items_stored[item_name].count or 0
         if quantity_desired > quantity_stocked then -- if we have fewer items than are desired, extract some from store
             local request = w.string_to_item(item_name)
             request.type = "extract"
