@@ -18,10 +18,14 @@ local function get_num_stacks(total_items)
     return math.ceil(total_items / 64)
 end
 
+local get_stacks()
+    local s = d.map(d.filter(chest.list(), function(x) return x ~= nil end), w.to_wyvern_item)
+    return s, w.collate_stacks(s)
+end
+
 local function main()
     while true do
-        local stacks_stored = d.map(d.filter(chest.list(), function(x) return x ~= nil end), w.to_wyvern_item)
-        local items_stored = w.collate_stacks(stacks_stored)
+        local stacks_stored, items_stored = get_stacks()
         
         local function get_item_count(ii)
             return (items_stored[ii] or {count = 0}).count
@@ -50,6 +54,7 @@ local function main()
                     from_slot = slot
                 }), "inserting items")
                 if result then print("Moved", result.moved, ii, "to storage.") end
+                stacks_stored, items_stored = get_stacks()
             end
         end
         
