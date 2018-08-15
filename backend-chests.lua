@@ -99,7 +99,7 @@ end
 local function search(query, exact)
     local results = find(function(item)
         if exact then
-            return query == item.display_name, 0
+            return string.lower(query) == string.lower(item.display_name), 0
         else
             local match, best_start = fuzzy_match(item.display_name, query)
             if best_start ~= nil and match > 0 then return true, match end
