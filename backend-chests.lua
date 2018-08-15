@@ -49,7 +49,7 @@ local function update_index_for(name)
     end
     
     index[name] = data
-
+    
     print("Indexed " .. name .. ".")
 end
 
@@ -90,9 +90,9 @@ end
 local function find_by_ID_meta_NBT(ID, meta, NBT_hash)
     return find(function(item)
         return 
-            (not meta or item.meta == meta) and -- if metadata provided, ensure match
-            (not ID or item.ID == ID) and -- if internal name provided, ensure match
-            (not NBT_hash or item.NBT_hash == NBT_hash) -- if NBT hash provided, ensure match
+        (not meta or item.meta == meta) and -- if metadata provided, ensure match
+        (not ID or item.ID == ID) and -- if internal name provided, ensure match
+        (not NBT_hash or item.NBT_hash == NBT_hash) -- if NBT hash provided, ensure match
     end)
 end
 
@@ -132,46 +132,48 @@ local function server(command)
         os.queueEvent "reindex"
     elseif command.type == "extract" then
         local result = find_by_ID_meta_NBT(command.ID, command.meta, command.NBT_hash)
-
+        
         local stacks = {}
-
+        
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
         local quantity_to_fetch_remaining, items_moved_from_storage = command.quantity or 0, 0
         repeat
             local stack_to_pull = table.remove(result, 1)
-
+            
             if not stack_to_pull then 
                 error(w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_to_fetch_remaining }))
             end
-
+            
             table.insert(stacks, stack_to_pull)
             items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
-            os.queueEvent("reindex", stack_to_pull.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+            index[location.inventory][location.slot].count = index[location.inventory][location.slot].count - items_moved_from_storage
+            if index[location.inventory][location.slot].count == 0 then index[location.inventory][location.slot] = nil
+            elseif index[location.inventory][location.slot].count < 0 then error "Index inconsistency error." end
         until items_moved_from_storage >= quantity_to_fetch_remaining
-
+        
         if command.destination_inventory then
             -- push items to destination
             items_moved_to_destination = peripheral.call(conf.buffer_external, "pushItems", command.destination_inventory, BUFFER_OUT_SLOT, command.quantity, command.destination_slot)
-
+            
             -- If destination didn't accept all items, clear out the buffer.
             if items_moved_to_destination < items_moved_from_storage then
                 clear_buffer()
             end
         end
-
+        
         return { moved = items_moved_to_destination or items_moved_from_storage, stacks = stacks_moved }
     elseif command.type == "insert" then
         local inventory_with_space = find_space()
         if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error
-
+        
         if command.from_inventory and command.from_slot then
             peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT) -- pull from from_inventory to buffer
         end
-
+        
         local moved = peripheral.call(conf.buffer_internal, "pushItems", inventory_with_space, BUFFER_IN_SLOT) -- push from buffer to free space
-
+        
         if moved > 0 then os.queueEvent("reindex", inventory_with_space) end -- only reindex if items were moved
-
+        
         return { moved = moved }
     elseif command.type == "search" then
         return w.collate_stacks(d.map(search(command.query, command.exact), function(x) return x.item end))
