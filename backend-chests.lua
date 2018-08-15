@@ -142,7 +142,7 @@ local function server(command)
 
             table.insert(stacks, stack_to_pull)
             items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
-            os.queueEvent("reindex", first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+            os.queueEvent("reindex", stack_to_pull.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
         until items_moved_from_storage >= quantity_to_fetch_remaining
 
         if command.destination_inventory then
