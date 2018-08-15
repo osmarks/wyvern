@@ -182,7 +182,7 @@ local function string_to_item(s)
     local mod, item, meta, NBT = string.match(s, "(%a+):(%a+):([0-9]+)#([0-9a-f]+)")
     if not NBT then mod, item, meta = string.match(s, "(%a+):(%a+):([0-9]+)") end
     if not mod or not item or not meta then error(errors.make(errors.INTERNAL, "string did not match regex")) end
-    return { ID = mod .. ":" .. item, meta = meta, NBT = NBT }
+    return { ID = mod .. ":" .. item, meta = tonumber(meta), NBT = NBT }
 end
 
 -- GENERAL STUFF
