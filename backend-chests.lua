@@ -128,17 +128,17 @@ local function server(command)
         os.queueEvent "reindex"
     elseif command.type == "extract" then
         local result = find_by_ID_meta_NBT(command.ID, command.meta, command.NBT_hash)
-        local first_available = result[1]
+
+        local stacks = {}
 
         -- Check if we have an item, and its stack is big enough; otherwise, send back an error.
-        local quantity_missing = 0
-        if not first_available then quantity_missing = command.quantity or 1
-        elseif command.quantity and command.quantity > first_available.item.count then quantity_missing = command.quantity - first_available.item.count end
-        if quantity_missing > 0 then error(w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_missing })) end
-
-        local items_moved_from_storage = fetch_by_location(first_available.location, command.quantity)
-
-        os.queueEvent("reindex", first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+        local quantity_to_fetch_remaining, items_moved_from_storage = command.quantity or 0, 0
+        repeat
+            local stack_to_pull = table.remove(result, 1)
+            table.insert(stacks, stack_to_pull)
+            items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
+            os.queueEvent("reindex", first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
+        until items_moved_from_storage >= quantity_to_fetch_remaining
 
         if command.destination_inventory then
             -- push items to destination
@@ -150,7 +150,7 @@ local function server(command)
             end
         end
 
-        return { moved = items_moved_to_destination or items_moved_from_storage, item = w.to_wyvern_item(first_available.item) }
+        return { moved = items_moved_to_destination or items_moved_from_storage, stacks = stacks_moved }
     elseif command.type == "insert" then
         local inventory_with_space = find_space()
         if not inventory_with_space then return w.errors.make(w.errors.NOSPACE) end -- if there's not space, say so in error
