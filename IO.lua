@@ -58,4 +58,5 @@ local function main()
 end
 
 local ok, err = pcall(main)
-print(w.errors.format(err))
+if type(err) == "table" then err = w.errors.format(err) end
+print(err)
