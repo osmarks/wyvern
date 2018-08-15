@@ -96,10 +96,14 @@ local function find_by_ID_meta_NBT(ID, meta, NBT_hash)
     end)
 end
 
-local function search(query, threshold)
+local function search(query, exact)
     local results = find(function(item)
-        local match, best_start = fuzzy_match(item.display_name, query)
-        if best_start ~= nil and match > 0 then return true, match end
+        if exact then
+            return query == item.display_name, 0
+        else
+            local match, best_start = fuzzy_match(item.display_name, query)
+            if best_start ~= nil and match > 0 then return true, match end
+        end
     end)
     return d.sort_by(results, function(x) return x.extra end) -- sort returned results by closeness to query
 end
@@ -170,7 +174,7 @@ local function server(command)
 
         return { moved = moved }
     elseif command.type == "search" then
-        return w.collate_stacks(d.map(search(command.query, command.threshold), function(x) return x.item end))
+        return w.collate_stacks(d.map(search(command.query, command.exact), function(x) return x.item end))
     elseif command.type == "list" then
         return index
     end
