@@ -84,7 +84,7 @@ local function find_space(quantity, item)
     for name, items in pairs(index) do
         for i = 1, inventories[name].size() do
             local item_in_slot = index[name][i]
-            if not item_in_slot or (item_in_slot.ID == item.ID and item_in_slot.meta == item.meta and item.NBT_hash == item_in_slot == NBT.hash) then -- slot is free or contains same type of item
+            if not item_in_slot or (item_in_slot.ID == item.ID and item_in_slot.meta == item.meta and item_in_slot.NBT_hash == item.NBT_hash) then -- slot is free or contains same type of item
                 table.insert(locations, { inventory = name, slot = i })
                 local available_space = item.max_count
                 if item_in_slot then available_space = available_space - item_in_slot.count end
