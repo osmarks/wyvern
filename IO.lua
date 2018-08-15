@@ -34,7 +34,7 @@ local function main()
                 request.type = "extract"
                 request.destination_inventory = conf.chest
                 local result = w.unwrap(w.query_by_type("storage", request), "extracting items", { w.errors.NOITEMS })
-                print("Moved", result.moved, item_name, "from storage.")
+                if result then print("Moved", result.moved, item_name, "from storage.") end
             end
         end
         
@@ -49,7 +49,7 @@ local function main()
                     from_inventory = conf.chest,
                     from_slot = slot
                 }), "inserting items")
-                print("Moved", result.moved, ii, "to storage.")
+                if result then print("Moved", result.moved, ii, "to storage.") end
             end
         end
         
