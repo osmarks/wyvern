@@ -24,17 +24,20 @@ while true do
             local request = w.string_to_item(item_name)
             request.type = "extract"
             request.destination_inventory = w.chest
-            w.unwrap(w.query_by_type("storage", request), "extracting items")
+            local result = w.unwrap(w.query_by_type("storage", request), "extracting items")
+            print("Moved", result.moved, item_name, "from storage.")
         end
     end
 
     for slot, item in pairs(stacks_stored) do
-        if not conf.items[w.get_internal_identifier(item)] then -- if item is not in want list, send it back to storage
-            w.unwrap(w.query_by_type("storage", {
+        local ii = w.get_internal_identifier(item)
+        if not conf.items[ii] then -- if item is not in want list, send it back to storage
+            local result = w.unwrap(w.query_by_type("storage", {
                 type = "insert",
                 from_inventory = conf.chest,
                 from_slot = slot
             }), "inserting items")
+            print("Moved", result.moved, ii, "to storage.")
         end
     end
 
