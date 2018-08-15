@@ -39,7 +39,7 @@ Client  Client  Client
 * **Server** is a computer running `backend-chests`. Other backends may eventually become available. It must be connected to the chests, clients, and both sides of the buffers.
 * **Client** is a crafty turtle running `client`. It must be connected to the server and external side of the buffers.
 * **Processing** will be used for autocrafting systems. It is not yet implemented.
-* **IO** units should be computers connected to chests.
+* **IO** units should be computers connected to chests. They are basically ME interfaces - they keep a certain item stocked but dump the rest into storage.
 
 ### Configuration
 Configuration is stored in `wyvern_config.tbl` in lua table syntax as used by `textutils.(un)serialise`.
