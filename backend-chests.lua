@@ -135,6 +135,11 @@ local function server(command)
         local quantity_to_fetch_remaining, items_moved_from_storage = command.quantity or 0, 0
         repeat
             local stack_to_pull = table.remove(result, 1)
+
+            if not stack_to_pull then 
+                error(w.errors.make(w.errors.NOITEMS, { type = w.get_internal_identifier(command), quantity = quantity_to_fetch_remaining }))
+            end
+
             table.insert(stacks, stack_to_pull)
             items_moved_from_storage = items_moved_from_storage + fetch_by_location(stack_to_pull.location, command.quantity)
             os.queueEvent("reindex", first_available.location.inventory) -- I'm too lazy to manually update the item properly, and indexing is fast enough, so just do this
