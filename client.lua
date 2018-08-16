@@ -104,9 +104,18 @@ local commands = {
             type = "search",
             query = query,
             exact = exact
-        }), "searching for items", {w.errors.NOITEMS}) or {{ count = 0 }}
+        }), "searching for items", {w.errors.NOITEMS})
 
-        print(items[1].count, query, "available.")
+        local count = 0
+
+        if items then
+            for _, i in pairs(items) do
+                count = i.count -- hacky method to get first available key - should only be one
+                break
+            end
+        end
+
+        print(count, query, "available.")
     end
 }
 
