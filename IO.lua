@@ -37,6 +37,7 @@ local function main()
                 local request = w.string_to_item(item_name)
                 request.type = "extract"
                 request.destination_inventory = conf.chest
+                request.quantity = quantity_desired - quantity_stocked
                 local result = w.unwrap(w.query_by_type("storage", request), "extracting items", { w.errors.NOITEMS })
                 if result then print("Moved", result.moved, item_name, "from storage.") end
             end
