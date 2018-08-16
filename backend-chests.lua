@@ -193,6 +193,7 @@ local function server(command)
         local raw_item = peripheral.call(conf.buffer_internal, "getItemMeta", BUFFER_IN_SLOT)
         if not raw_item then return end
         local item = w.to_wyvern_item(raw_item)
+        if not item then return end
 
         w.join(item, cache(item, peripheral.wrap(conf.buffer_internal), BUFFER_IN_SLOT))
         local space_locations = find_space(item) -- command contains item-related stuff
