@@ -27,7 +27,8 @@ withdraw [items] - as above but withdraws all available matching items
 dump [slot] - dump stack in slot back to storage
 dump - dump whole inventory to storage
 craft - runs turtle.craft
-reindex - force storage server to reindex its contents]]
+reindex - force storage server to reindex its contents
+quantity [name] - see how many of an item you have (uses exact match)]]
 
 local function dump(slot)
     return w.query_by_type("storage", {
@@ -95,6 +96,17 @@ local commands = {
     end,
     reindex = function()
         w.unwrap(w.query_by_type("storage", { type = "reindex" }), "requesting reindexing")
+    end,
+    quantity = function(query_tokens)
+        local query = table.concat(query_tokens, " ")
+
+        local items = w.unwrap(w.query_by_type("storage", {
+            type = "search",
+            query = query,
+            exact = exact
+        }), "searching for items", {w.errors.NOITEMS}) or {{ count = 0 }}
+
+        print(items[1].count, query, "available.")
     end
 }
 
