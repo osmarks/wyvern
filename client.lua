@@ -97,8 +97,8 @@ local commands = {
     reindex = function()
         w.unwrap(w.query_by_type("storage", { type = "reindex" }), "requesting reindexing")
     end,
-    quantity = function(query_tokens)
-        local query = table.concat(query_tokens, " ")
+    quantity = function(...)
+        local query = table.concat({...}, " ")
 
         local items = w.unwrap(w.query_by_type("storage", {
             type = "search",
