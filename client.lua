@@ -103,7 +103,7 @@ local commands = {
         local items = w.unwrap(w.query_by_type("storage", {
             type = "search",
             query = query,
-            exact = exact
+            exact = true
         }), "searching for items", {w.errors.NOITEMS})
 
         local count = 0
