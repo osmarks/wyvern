@@ -189,11 +189,9 @@ local function server(command)
         if command.from_inventory and command.from_slot then
             peripheral.call(conf.buffer_external, "pullItems", command.from_inventory, command.from_slot, command.quantity, BUFFER_IN_SLOT) -- pull from from_inventory to buffer
         end
-        
-        local quantity = peripheral.call(conf.buffer_external, "pullItems", conf.buffer_external, BUFFER_IN_SLOT, 64, BUFFER_IN_SLOT) -- send to itself to get stack size
 
         local raw_item = peripheral.call(conf.buffer_internal, "getItemMeta", BUFFER_IN_SLOT)
-        if not raw_item or quantity == 0 then return end
+        if not raw_item then return end
         local item = w.to_wyvern_item(raw_item)
 
         w.join(item, cache(item, peripheral.wrap(conf.buffer_internal), BUFFER_IN_SLOT))
