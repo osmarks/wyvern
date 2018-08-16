@@ -137,10 +137,14 @@ local function clear_buffer()
     end
 end
 
-local function update_slot(inv, slot, by)
-    index[inv][slot].count = index[inv][slot].count - by
-    if index[inv][slot].count == 0 then index[inv][slot] = nil
-    elseif index[inv][slot].count < 0 then os.queueEvent "reindex" error "Index inconsistency error." end
+local function update_slot(inv, slot, by, stack)
+    if index[inv][slot] then 
+        index[inv][slot].count = index[inv][slot].count - by
+        if index[inv][slot].count == 0 then index[inv][slot] = nil
+        elseif index[inv][slot].count < 0 then os.queueEvent "reindex" error "Index inconsistency error." end
+    else
+        index[inv][slot] = stack
+    end
 end
 
 local function server(command)
@@ -167,7 +171,7 @@ local function server(command)
 
             -- update index
             local location = stack_to_pull.location
-            update_slot(location.inventory, location.slot, items_moved_from_storage)
+            update_slot(location.inventory, location.slot, items_moved_from_storage, stack_to_pull)
         until items_moved_from_storage >= quantity_to_fetch_remaining
         
         if command.destination_inventory then
@@ -197,7 +201,7 @@ local function server(command)
 
         for _, loc in pairs(space_locations) do
             local moved_now = peripheral.call(conf.buffer_internal, "pushItems", loc.inventory, BUFFER_IN_SLOT, 64, loc.slot) -- push from buffer to free space
-            update_slot(loc.inventory, loc.slot, -moved_now)
+            update_slot(loc.inventory, loc.slot, -moved_now, item)
             moved = moved + moved_now
         end
         
