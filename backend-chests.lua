@@ -79,16 +79,19 @@ local function find(predicate)
 end
 
 -- Finds space in the chest system. Returns the name of an inventory which has space.
-local function find_space(quantity, item)
+local function find_space(item)
     local locations = {}
+    local quantity = item.count
     for name, items in pairs(index) do
         for i = 1, inventories[name].size() do
             local item_in_slot = index[name][i]
             if not item_in_slot or (item_in_slot.ID == item.ID and item_in_slot.meta == item.meta and item_in_slot.NBT_hash == item.NBT_hash) then -- slot is free or contains same type of item
-                table.insert(locations, { inventory = name, slot = i })
                 local available_space = item.max_count
                 if item_in_slot then available_space = available_space - item_in_slot.count end
-                quantity = quantity - available_space
+                if available_space > 0 then 
+                    quantity = quantity - available_space
+                    table.insert(locations, { inventory = name, slot = i })
+                end
                 if quantity <= 0 then return locations end
             end
         end
@@ -188,7 +191,7 @@ local function server(command)
         local item = w.to_wyvern_item(peripheral.call(conf.buffer_internal, "getItemMeta", BUFFER_IN_SLOT))
 
         w.join(item, cache(item, peripheral.wrap(conf.buffer_internal), BUFFER_IN_SLOT))
-        local space_locations = find_space(quantity, item) -- command contains item-related stuff
+        local space_locations = find_space(item) -- command contains item-related stuff
 
         local moved = 0
 
