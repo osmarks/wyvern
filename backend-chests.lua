@@ -31,7 +31,8 @@ local function cache(item, chest, slot)
     if info_cache[idx] then
         return info_cache[idx]
     else
-		local info = chest.getItemMeta(slot)
+        local info = chest.getItemMeta(slot)
+        sleep() -- probably will slow things, but important to reduce peripheral calls a second
         info_cache[idx] = { display_name = info.displayName, max_count = info.maxCount }
 		return info_cache[idx]
     end
