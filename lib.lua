@@ -27,6 +27,7 @@ local errors = {
 
 -- Converts an error into human-readable format
 errors.format = function(e)
+    if type(e) == "string" then return e end
     if not (e.type and e.type == "error" and e.data and e.error) then return "Provided error is not an error object." end
     if e.error == errors.INTERNAL then
         return "Internal error - provided info: " .. textutils.serialise(e.data) .. "."

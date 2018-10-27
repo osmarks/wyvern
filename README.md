@@ -69,5 +69,15 @@ For help using the client, run `help` or `h`.
 ## Coming Soon(ish) (maybe)
 * Audit log on server - see when items were moved.
 * Overlay glasses/introspection module client.
-* Autocrafting (just a port from Dragon's).
+* Autocrafting (just a port from Dragon's). (actually, no: see below)
 * Autosmelting (basically autocrafting).
+
+## I'm Not Adding Autocrafting
+When I was first thinking about autocrafting, it seemed simple enough - recursively go through a tree of patterns. This is because Dragon's crafting algorithm was incredibly naive. For Wyvern, I wanted to avoid manually transcribing recipes from JEI, so I got a recipe dump - a JSON file, containing every recipe available. This resulted in the naive picture no longer working. At all. Some examples which it would not work correctly on:
+* Recipes which are their own inputs.
+* Any sort of recipe loop, generally.
+* Multiple ways to craft a thing.
+* Those weird subjective situations, where a user wants to use one of 1000 oak logs and not one of 8 dark oak planks. Most autocrafters will pick the thing requiring the least crafting tasks - often this is not what is wanted.
+* Parallelizing crafting across multiple assemblers
+
+In short, unless someone develops some fancy algorithm to figure out crafting paths (tree/graph pathfinding or something?), I can't really add it.
